@@ -1,0 +1,1116 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Heavy Base</title>
+<meta name="description" content="Heavy Base. Be hard to move. A strength training log.">
+<meta name="theme-color" content="#17150F">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta name="apple-mobile-web-app-title" content="Heavy Base">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32.png">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@700;900&family=Archivo:ital,wght@0,400;0,600;0,800;1,800&family=IBM+Plex+Mono:wght@500;700&display=swap">
+<style>
+/* Heavy Base. One phone-width column on iron: wordmark and program position up top, lift cards with
+   tap-to-log plate discs, rest timer docked above a bottom tab bar. Deliberately a single dark look.
+   Red and gold are used like tape on a bar: small and on purpose. Numbers are IBM Plex Mono. */
+:root {
+  --iron: #17150F; --rubber: #24211A; --plate: #36322A; --chalk: #ECE6D8; --chalk-dim: #ADA595; --red: #C62A1E; --gold: #E3A41F;
+  --bg: var(--iron); --surface: var(--rubber); --sunk: #1D1B14; --fg: var(--chalk); --muted: var(--chalk-dim); --line: var(--plate);
+  --accent: var(--gold); --accent-fg: var(--iron); --good: var(--gold); --good-bg: rgba(227,164,31,.14); --bad: #E0483B; --bad-bg: rgba(198,42,30,.2);
+  --p45: var(--red); --p35: var(--gold); --p25: var(--chalk); --p10: var(--plate); --plate-fg: var(--chalk);
+  --display: "Big Shoulders Display", "Impact", "Arial Narrow Bold", sans-serif;
+  --body: "Archivo", "Helvetica Neue", Arial, sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, Menlo, monospace;
+  --tabs-h: 60px;
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+html, body { background: var(--bg); }
+body { color: var(--fg); font-family: var(--body); font-size: 16px; line-height: 1.45; }
+button, input, select { font: inherit; color: inherit; }
+button { cursor: pointer; -webkit-tap-highlight-color: transparent; touch-action: manipulation; }
+button:disabled { opacity: .35; cursor: default; }
+:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
+::selection { background: var(--gold); color: var(--iron); }
+.app { max-width: 520px; margin: 0 auto; padding-inline: 16px; padding-block: 18px calc(var(--tabs-h) + 130px); display: flex; flex-direction: column; gap: 14px; }
+.num { font-family: var(--mono); font-variant-numeric: tabular-nums; }
+strong { font-weight: 800; }
+
+/* header: stacked wordmark, the FlyTy lockup, singlet stripes, then where you are in the program */
+.top { display: flex; flex-direction: column; gap: 8px; }
+.brand { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.wm { font-family: var(--display); font-weight: 900; text-transform: uppercase; line-height: .8; font-size: 44px; letter-spacing: .005em; transform: skewX(-9deg); transform-origin: left bottom; margin: 0; }
+.wm span { display: block; color: var(--chalk); }
+.wm span + span { color: var(--gold); }
+.lock { display: flex; align-items: center; gap: 10px; flex: none; }
+.lock .x { font-family: var(--mono); font-weight: 700; font-size: 20px; color: var(--red); line-height: 1; }
+.logo { width: 60px; height: 60px; border-radius: 50%; background: var(--chalk); display: grid; place-items: center; padding: 5px; overflow: hidden; flex: none; }
+.logo img { width: 100%; height: auto; display: block; }
+.tag { font-family: var(--body); font-weight: 800; font-style: italic; text-transform: uppercase; font-size: 13px; letter-spacing: .04em; color: var(--chalk-dim); }
+.stripes { display: flex; flex-direction: column; gap: 3px; transform: skewX(-14deg); transform-origin: left bottom; margin: 2px 0 6px; }
+.stripes i { display: block; height: 5px; }
+.stripes i:nth-child(1) { background: var(--red); }
+.stripes i:nth-child(2) { background: var(--gold); }
+.stripes i:nth-child(3) { background: var(--chalk); }
+.eyebrow { font-family: var(--mono); font-size: 12px; font-weight: 500; letter-spacing: .1em; text-transform: uppercase; color: var(--gold); }
+h1 { font-family: var(--display); font-weight: 900; font-size: 46px; line-height: .92; margin: 0; text-transform: uppercase; letter-spacing: .005em; text-wrap: balance; }
+h2 { font-family: var(--display); font-weight: 900; font-size: 26px; line-height: 1; margin: 0; text-transform: uppercase; letter-spacing: .01em; }
+.prog { height: 6px; background: var(--rubber); overflow: hidden; margin-top: 2px; }
+.prog > i { display: block; height: 100%; background: var(--gold); }
+
+#view { display: flex; flex-direction: column; gap: 12px; }
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: 3px; padding: 14px; display: flex; flex-direction: column; gap: 12px; min-width: 0; }
+.row { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
+.lift-name { font-family: var(--display); font-weight: 900; font-size: 28px; text-transform: uppercase; line-height: .95; letter-spacing: .005em; }
+.scheme { color: var(--muted); font-size: 14px; }
+.note { color: var(--muted); font-size: 14px; }
+.banner { background: var(--sunk); border-left: 4px solid var(--red); padding: 12px 14px; font-size: 15px; }
+.banner strong { color: var(--gold); }
+
+.stepper { display: flex; align-items: center; gap: 8px; }
+.stepper .val { min-width: 96px; text-align: center; font-family: var(--mono); font-weight: 700; font-size: 30px; line-height: 1; font-variant-numeric: tabular-nums; letter-spacing: -.03em; }
+.stepper .val small { font-family: var(--body); font-size: 13px; font-weight: 600; color: var(--muted); margin-left: 3px; letter-spacing: 0; text-transform: uppercase; }
+.sq { width: 44px; height: 44px; border-radius: 2px; border: 2px solid var(--line); background: var(--iron); font-size: 22px; font-weight: 600; line-height: 1; color: var(--chalk); }
+.sq:active { background: var(--plate); }
+
+.plates { display: flex; align-items: center; gap: 5px; flex-wrap: wrap; font-family: var(--mono); font-size: 11px; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
+.plate { font-family: var(--mono); font-weight: 700; font-size: 14px; letter-spacing: 0; color: var(--plate-fg); padding: 2px 7px; border-radius: 2px; background: var(--p10); font-variant-numeric: tabular-nums; }
+.plate.p45 { background: var(--p45); } .plate.p35 { background: var(--p35); color: var(--iron); } .plate.p25 { background: var(--p25); color: var(--iron); }
+
+/* set discs read like plates on a bar: empty ring, gold when every rep is in, red when short */
+.sets { display: flex; gap: 10px; flex-wrap: wrap; }
+.set { width: 54px; height: 54px; border-radius: 50%; border: 3px solid var(--plate); background: var(--iron); color: var(--muted);
+  font-family: var(--mono); font-weight: 700; font-size: 21px; font-variant-numeric: tabular-nums;
+  user-select: none; -webkit-user-select: none; -webkit-touch-callout: none; }
+.set.full { background: var(--gold); border-color: var(--gold); color: var(--iron); }
+.set.part { background: var(--bad-bg); border-color: var(--red); color: var(--chalk); }
+.set.editing { outline: 3px solid var(--chalk); outline-offset: 2px; }
+.erbar { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; background: var(--sunk); border: 1px solid var(--line); padding: 10px; }
+input.erin[type="number"] { width: 84px; min-height: 44px; text-align: center; font-family: var(--mono); font-weight: 700; font-size: 26px; padding: 2px 4px; }
+
+.chip { display: inline-block; font-family: var(--mono); font-size: 11px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; padding: 3px 8px; border-radius: 2px; background: var(--plate); color: var(--chalk-dim); }
+.chip.ov { background: var(--red); color: var(--chalk); }
+.ovcard { border-color: var(--red); border-width: 1px; border-left-width: 5px; }
+.nt { white-space: pre-wrap; overflow-wrap: anywhere; }
+textarea { width: 100%; font-family: var(--body) !important; letter-spacing: 0; text-transform: none; min-height: 88px; padding: 8px 10px; border-radius: 2px; border: 1px solid var(--line); background: var(--iron); color: var(--fg); font: inherit; font-size: 16px; resize: vertical; }
+.chip.good { background: var(--gold); color: var(--iron); }
+.chip.bad { background: var(--red); color: var(--chalk); }
+
+.btn { min-height: 48px; padding: 10px 16px; border-radius: 2px; border: 2px solid var(--line); background: transparent; color: var(--chalk); font-family: var(--display); font-weight: 900; font-size: 19px; text-transform: uppercase; letter-spacing: .03em; line-height: 1.05; }
+.btn:active { background: var(--plate); }
+.btn.primary { background: var(--gold); border-color: var(--gold); color: var(--iron); font-size: 24px; letter-spacing: .03em; min-height: 54px; }
+.btn.primary:active { background: #C98F14; }
+.btn.danger { color: var(--chalk); background: var(--red); border-color: var(--red); }
+.btn.quiet { border-color: transparent; background: transparent; color: var(--muted); }
+.btn.small { min-height: 36px; padding: 4px 12px; font-size: 16px; }
+.stack { display: flex; flex-direction: column; gap: 10px; }
+.btns { display: flex; gap: 10px; flex-wrap: wrap; }
+.btns > .btn { flex: 1 1 140px; }
+.btns > .btn.primary { font-size: 21px; white-space: nowrap; }
+
+.field { display: flex; flex-direction: column; gap: 5px; font-family: var(--mono); font-size: 11px; font-weight: 500; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); min-width: 0; }
+select, input[type="number"], input[type="text"] { width: 100%; min-height: 44px; padding: 8px 10px; border-radius: 2px; border: 1px solid var(--line); background: var(--iron); color: var(--fg); font-family: var(--body); font-size: 16px; letter-spacing: 0; text-transform: none; }
+input[type="number"] { font-family: var(--mono); font-weight: 700; }
+input::placeholder, textarea::placeholder { color: #6E685B; }
+select { appearance: none; -webkit-appearance: none; padding-right: 32px; background-image: linear-gradient(45deg, transparent 50%, var(--gold) 50%), linear-gradient(135deg, var(--gold) 50%, transparent 50%); background-position: calc(100% - 17px) 50%, calc(100% - 11px) 50%; background-size: 6px 6px; background-repeat: no-repeat; }
+.mmss { display: flex; align-items: center; gap: 4px; font-family: var(--mono); font-weight: 700; color: var(--chalk); }
+.mmss input[type="number"] { padding: 8px 4px; text-align: center; min-width: 0; }
+.grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.grid3 { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+.grid4 { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; }
+.pick { display: flex; gap: 8px; flex-wrap: wrap; }
+.pick .btn { min-height: 40px; padding: 6px 14px; font-size: 17px; }
+.pick .btn[aria-pressed="true"] { background: var(--chalk); color: var(--iron); border-color: var(--chalk); }
+.wl { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 6px 0; border-bottom: 1px solid var(--line); }
+.wl span { min-width: 0; overflow-wrap: anywhere; }
+.wl div { display: flex; gap: 6px; flex: none; }
+.wl strong { font-family: var(--display); font-weight: 900; font-size: 20px; text-transform: uppercase; letter-spacing: .01em; }
+.check { display: flex; align-items: center; gap: 10px; font-size: 15px; }
+.check input { width: 22px; height: 22px; accent-color: var(--gold); }
+.logline { font-family: var(--mono); font-weight: 700; font-size: 17px; font-variant-numeric: tabular-nums; letter-spacing: -.01em; }
+
+table { width: 100%; border-collapse: collapse; font-size: 15px; }
+th, td { text-align: left; padding: 8px 4px; border-bottom: 1px solid var(--line); }
+th { font-family: var(--mono); font-size: 11px; text-transform: uppercase; letter-spacing: .1em; color: var(--muted); font-weight: 500; }
+td.n, th.n { text-align: right; font-variant-numeric: tabular-nums; }
+td.n { font-family: var(--mono); font-weight: 700; }
+td.n:last-child { color: var(--gold); }
+tr:last-child td { border-bottom: 0; }
+.hist-lift { display: flex; justify-content: space-between; gap: 10px; align-items: baseline; flex-wrap: wrap; }
+
+/* rest timer docked above the tabs: rubber with a gold edge; flips to gold when rest is over */
+.timer { position: fixed; left: 0; right: 0; bottom: calc(var(--tabs-h) + env(safe-area-inset-bottom, 0px)); background: #0E0D09; color: var(--chalk); border-top: 3px solid var(--gold); z-index: 5; }
+.timer-in { max-width: 520px; margin: 0 auto; padding: 8px 16px; display: flex; align-items: center; gap: 8px; }
+.timer .clock { font-family: var(--mono); font-weight: 700; font-size: 40px; line-height: 1; font-variant-numeric: tabular-nums; letter-spacing: -.03em; flex: 1; min-width: 0; }
+.timer .clock small { display: block; font-family: var(--mono); font-size: 11px; font-weight: 500; letter-spacing: .12em; text-transform: uppercase; color: var(--chalk-dim); margin-bottom: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.trow.done { background: var(--gold); color: var(--iron); }
+.trow.done .clock small { color: var(--iron); font-weight: 700; letter-spacing: .02em; }
+.trow + .trow { border-top: 1px solid var(--plate); }
+.timer.two .clock { font-size: 30px; }
+body.two .app { padding-block-end: calc(var(--tabs-h) + 210px); }
+.lname { font-family: var(--display); font-weight: 900; font-size: 22px; text-transform: uppercase; letter-spacing: .01em; line-height: 1; }
+.lblock { display: flex; flex-direction: column; gap: 12px; }
+.lblock + .lblock { border-top: 1px solid var(--line); padding-top: 12px; }
+.prow { border-top: 1px solid var(--line); padding-top: 10px; }
+.tpanel { gap: 10px; border-color: var(--line); border-left: 5px solid var(--red); position: sticky; top: env(safe-area-inset-top, 0px); z-index: 4; box-shadow: 0 8px 20px rgba(0,0,0,.45); }
+.tline { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.tline + .tline { border-top: 1px solid var(--line); padding-top: 10px; }
+.tstat { font-family: var(--mono); font-weight: 700; font-size: 17px; text-transform: uppercase; text-align: right; font-variant-numeric: tabular-nums; letter-spacing: -.01em; }
+.tstat.go { color: var(--gold); }
+.timer button { min-width: 50px; height: 44px; border-radius: 2px; border: 2px solid currentColor; background: transparent; color: inherit; font-family: var(--mono); font-weight: 700; font-size: 14px; padding: 0 8px; }
+
+.tabs { position: fixed; left: 0; right: 0; bottom: 0; background: var(--iron); border-top: 1px solid var(--plate); padding-bottom: env(safe-area-inset-bottom, 0px); z-index: 6; }
+.tabs-in { max-width: 520px; margin: 0 auto; display: flex; height: var(--tabs-h); }
+.tabs button { flex: 1; border: 0; background: transparent; color: var(--muted); font-family: var(--display); font-weight: 900; font-size: 19px; text-transform: uppercase; letter-spacing: .03em; border-top: 4px solid transparent; padding: 0 2px; }
+.tabs button[aria-current="page"] { color: var(--chalk); border-top-color: var(--gold); }
+
+/* set callouts: short, plain, earned */
+.cheer { position: fixed; left: 50%; top: calc(env(safe-area-inset-top, 0px) + 56px); transform: translateX(-50%); width: min(360px, calc(100% - 32px)); background: var(--rubber); color: var(--chalk); border: 1px solid var(--plate); border-left: 6px solid var(--gold); border-radius: 2px; padding: 12px 16px; z-index: 8; box-shadow: 0 12px 30px rgba(0,0,0,.55); animation: cheerIn .24s ease-out; }
+.cheer.big { border-left: 10px solid var(--red); padding: 16px 18px; }
+.cheer .ch { font-family: var(--display); font-weight: 900; font-size: 26px; line-height: 1; text-transform: uppercase; letter-spacing: .01em; }
+.cheer.big .ch { font-size: 34px; color: var(--gold); }
+.cheer .cm { font-size: 15px; margin-top: 5px; color: var(--chalk-dim); }
+@keyframes cheerIn { from { opacity: 0; transform: translate(-50%, -14px); } to { opacity: 1; transform: translate(-50%, 0); } }
+@media (prefers-reduced-motion: reduce) { .cheer { animation: none; } }
+.toast { position: fixed; left: 50%; top: calc(env(safe-area-inset-top, 0px) + 12px); transform: translateX(-50%); background: var(--chalk); color: var(--iron); padding: 9px 16px; border-radius: 2px; font-weight: 600; font-size: 15px; z-index: 9; max-width: calc(100% - 32px); box-shadow: 0 8px 24px rgba(0,0,0,.5); }
+@media (max-width: 360px) { .wm { font-size: 38px; } .logo { width: 52px; height: 52px; } h1 { font-size: 40px; } .tabs button { font-size: 17px; } }
+body { margin: 0; -webkit-text-size-adjust: 100%; }
+[hidden] { display: none !important; }
+img { max-width: 100%; }
+</style>
+</head>
+<body>
+
+<div class="app">
+  <header class="top">
+    <div class="brand"><div class="wm" role="img" aria-label="Heavy Base"><span>Heavy</span><span>Base</span></div><div class="lock" aria-label="Heavy Base times FlyTy"><span class="x" aria-hidden="true">×</span><span class="logo"><img alt="FlyTy" src="icons/flyty.png" width="256" height="243"></span></div></div>
+    <div class="stripes" aria-hidden="true"><i></i><i></i><i></i></div>
+    <div class="tag">Be hard to move.</div>
+    <div class="eyebrow" id="hdr-eyebrow"></div>
+    <h1 id="hdr-title"></h1>
+    <div class="prog" aria-hidden="true"><i id="hdr-prog"></i></div>
+  </header>
+  <main id="view"></main>
+</div>
+
+<div class="timer" id="timer" hidden>
+  <div class="trow" id="trow-a"><div class="timer-in">
+    <div class="clock"><small id="tl-a">Rest</small><span id="tc-a">3:00</span></div>
+    <button type="button" data-act="t-adj" data-who="a" data-sign="-1" data-d="-15" aria-label="15 seconds less">−15</button>
+    <button type="button" data-act="t-adj" data-who="a" data-sign="1" data-d="15" aria-label="15 seconds more">+15</button>
+    <button type="button" data-act="t-skip" data-who="a">Skip</button>
+  </div></div>
+  <div class="trow" id="trow-p" hidden><div class="timer-in">
+    <div class="clock"><small id="tl-p">Rest</small><span id="tc-p">3:00</span></div>
+    <button type="button" data-act="t-adj" data-who="p" data-sign="-1" data-d="-15" aria-label="15 seconds less">−15</button>
+    <button type="button" data-act="t-adj" data-who="p" data-sign="1" data-d="15" aria-label="15 seconds more">+15</button>
+    <button type="button" data-act="t-skip" data-who="p">Skip</button>
+  </div></div>
+</div>
+
+<nav class="tabs" aria-label="Sections">
+  <div class="tabs-in">
+    <button type="button" data-act="tab" data-tab="today" id="tab-today">Workout</button>
+    <button type="button" data-act="tab" data-tab="history" id="tab-history">History</button>
+    <button type="button" data-act="tab" data-tab="program" id="tab-program">Program</button>
+    <button type="button" data-act="tab" data-tab="settings" id="tab-settings">Settings</button>
+  </div>
+</nav>
+<div class="toast" id="toast" hidden></div>
+<div class="cheer" id="cheer" hidden role="status" aria-live="polite"></div>
+
+<script>
+/*LOGIC*/
+const LIB = {
+  squat:    { name: 'Squat',             bar: true,  sets: 5, reps: 5,  inc: 5,   start: 135 },
+  bench:    { name: 'Bench press',       bar: true,  sets: 5, reps: 5,  inc: 5,   start: 115 },
+  clean:    { name: 'Power clean',       bar: true,  sets: 5, reps: 5,  inc: 5,   start: 95 },
+  press:    { name: 'Overhead press',    bar: true,  sets: 5, reps: 5,  inc: 5,   start: 75 },
+  deadlift: { name: 'Deadlift',          bar: true,  sets: 1, reps: 5,  inc: 10,  start: 185 },
+  row:      { name: 'Barbell row',       bar: true,  sets: 5, reps: 5,  inc: 5,   start: 95 },
+  fsquat:   { name: 'Front squat',       bar: true,  sets: 3, reps: 5,  inc: 5,   start: 95 },
+  rdl:      { name: 'Romanian deadlift', bar: true,  sets: 3, reps: 8,  inc: 5,   start: 135 },
+  incline:  { name: 'Incline bench',     bar: true,  sets: 3, reps: 8,  inc: 5,   start: 95 },
+  cgbench:  { name: 'Close-grip bench',  bar: true,  sets: 3, reps: 8,  inc: 5,   start: 95 },
+  thrust:   { name: 'Hip thrust',        bar: true,  sets: 3, reps: 8,  inc: 10,  start: 135 },
+  lunge:    { name: 'Barbell lunge',     bar: true,  sets: 3, reps: 8,  inc: 5,   start: 65 },
+  curl:     { name: 'Barbell curl',      bar: true,  sets: 3, reps: 8,  inc: 5,   start: 45 },
+  chinup:   { name: 'Chin-up (added weight)', bar: false, sets: 3, reps: 8, inc: 2.5, start: 0 },
+  dip:      { name: 'Dip (added weight)',     bar: false, sets: 3, reps: 8, inc: 2.5, start: 0 },
+  dbpress:  { name: 'Dumbbell press',    bar: false, sets: 3, reps: 8,  inc: 5,   start: 40 },
+  pulldown: { name: 'Lat pulldown',      bar: false, sets: 3, reps: 10, inc: 5,   start: 100 },
+  legpress: { name: 'Leg press',         bar: false, sets: 3, reps: 10, inc: 10,  start: 180 },
+  /* Bodyweight lifts. They add reps per set instead of weight: `step` reps every `every` weeks until `target`. */
+  pullup:   { name: 'Pull-up',               kind: 'bw', bar: false, sets: 3, reps: 5,  inc: 0, start: 0, target: 10, step: 1, every: 1 },
+  chin:     { name: 'Chin-up',               kind: 'bw', bar: false, sets: 3, reps: 5,  inc: 0, start: 0, target: 10, step: 1, every: 1 },
+  widepu:   { name: 'Wide-grip pull-up',     kind: 'bw', bar: false, sets: 3, reps: 4,  inc: 0, start: 0, target: 8,  step: 1, every: 1 },
+  neutralpu:{ name: 'Neutral-grip pull-up',  kind: 'bw', bar: false, sets: 3, reps: 5,  inc: 0, start: 0, target: 10, step: 1, every: 1 },
+  negpu:    { name: 'Negative pull-up',      kind: 'bw', bar: false, sets: 3, reps: 3,  inc: 0, start: 0, target: 6,  step: 1, every: 1 },
+  pushup:   { name: 'Push-up',               kind: 'bw', bar: false, sets: 3, reps: 10, inc: 0, start: 0, target: 30, step: 5, every: 2 },
+  widepush: { name: 'Wide push-up',          kind: 'bw', bar: false, sets: 3, reps: 10, inc: 0, start: 0, target: 25, step: 5, every: 2 },
+  diamond:  { name: 'Diamond push-up',       kind: 'bw', bar: false, sets: 3, reps: 5,  inc: 0, start: 0, target: 20, step: 5, every: 2 },
+  declpush: { name: 'Decline push-up',       kind: 'bw', bar: false, sets: 3, reps: 8,  inc: 0, start: 0, target: 25, step: 5, every: 2 },
+  inclpush: { name: 'Incline push-up',       kind: 'bw', bar: false, sets: 3, reps: 10, inc: 0, start: 0, target: 30, step: 5, every: 2 },
+  dipbw:    { name: 'Dips',                  kind: 'bw', bar: false, sets: 3, reps: 5,  inc: 0, start: 0, target: 12, step: 1, every: 1 },
+  /* Power and plyometrics. Bodyweight jumps keep their reps until you change them (step 0). Full recovery between sets. */
+  sled:     { name: 'Sled push (1 push per set)', grp: 'power', bar: false, sets: 5, reps: 1, inc: 10, start: 90, rest: 120 },
+  boxjump:  { name: 'Box jump',              kind: 'bw', grp: 'power', bar: false, sets: 4, reps: 5, inc: 0, start: 0, target: 5, step: 0, every: 1, rest: 120 },
+  depthjump:{ name: 'Depth jump',            kind: 'bw', grp: 'power', bar: false, sets: 4, reps: 4, inc: 0, start: 0, target: 4, step: 0, every: 1, rest: 120 },
+  sbox:     { name: 'Single-leg box jump',   kind: 'bw', grp: 'power', perSide: true, bar: false, sets: 3, reps: 3, inc: 0, start: 0, target: 3, step: 0, every: 1, rest: 120 },
+  lbox:     { name: 'Lateral box jump',      kind: 'bw', grp: 'power', bar: false, sets: 3, reps: 4, inc: 0, start: 0, target: 4, step: 0, every: 1, rest: 120 },
+  broad:    { name: 'Broad jump',            kind: 'bw', grp: 'power', bar: false, sets: 4, reps: 3, inc: 0, start: 0, target: 3, step: 0, every: 1, rest: 120 },
+  jsquat:   { name: 'Jump squat',            kind: 'bw', grp: 'power', bar: false, sets: 4, reps: 5, inc: 0, start: 0, target: 5, step: 0, every: 1, rest: 120 },
+  tuck:     { name: 'Tuck jump',             kind: 'bw', grp: 'power', bar: false, sets: 3, reps: 5, inc: 0, start: 0, target: 5, step: 0, every: 1, rest: 90 },
+  bound:    { name: 'Lateral bound',         kind: 'bw', grp: 'power', bar: false, sets: 3, reps: 5, inc: 0, start: 0, target: 5, step: 0, every: 1, rest: 90 },
+  medslam:  { name: 'Medicine ball slam',    grp: 'power', bar: false, sets: 4, reps: 5,  inc: 5, start: 10, rest: 90 },
+  swing:    { name: 'Kettlebell swing',      grp: 'power', bar: false, sets: 4, reps: 10, inc: 5, start: 35, rest: 90 }
+};
+function libLift(id) {
+  const b = LIB[id];
+  const l = { name: b.name, bar: b.bar, w: b.start, inc: b.inc, fails: 0, sets: b.sets, reps: b.reps, baseSets: b.sets, baseReps: b.reps, rest: b.rest || null };
+  if (b.grp) l.grp = b.grp;
+  if (b.perSide) l.perSide = true;
+  if (b.kind === 'bw') { l.kind = 'bw'; l.target = b.target; l.step = b.step; l.every = b.every; l.since = null; }
+  return l;
+}
+function defaultState() {
+  const lifts = {};
+  for (const id of Object.keys(LIB)) lifts[id] = libLift(id);
+  return { v: 2, updatedAt: 0, setup: false, settings: { cheer: true, rest: 180, restBw: 90, restUnit: 'min', restStep: 15, voice: true, failLimit: 3, deloadPct: 10, bar: 45, total: 36, perWeek: 3 }, lifts,
+    workouts: [{ name: 'A', lifts: ['squat', 'bench', 'clean'] }, { name: 'B', lifts: ['squat', 'press', 'deadlift'] }], nextIdx: 0, history: [], active: null,
+    archive: [], partnerId: null, myName: 'Me', programName: 'My program', currentId: 'p1', programs: [{ id: 'p1', name: 'My program', data: null }] };
+}
+function normalize(s) {
+  const d = defaultState();
+  if (!s || typeof s !== 'object') return d;
+  const out = { ...d, ...s, v: 2, settings: { ...d.settings, ...(s.settings || {}) }, lifts: {} };
+  const sl = s.lifts || {};
+  for (const id of Object.keys(LIB)) out.lifts[id] = { ...d.lifts[id], ...(sl[id] || {}) };
+  for (const id of Object.keys(sl)) if (!LIB[id] && sl[id] && sl[id].name) {
+    const c = { bar: true, w: 45, inc: 5, fails: 0, sets: 5, reps: 5, baseSets: 5, baseReps: 5, rest: null, ...sl[id] };
+    if (c.kind === 'bw') Object.assign(c, { target: 15, step: 1, every: 1, since: null, ...sl[id] });
+    out.lifts[id] = c;
+  }
+  if (!Array.isArray(out.history)) out.history = [];
+  out.workouts = (Array.isArray(s.workouts) && s.workouts.length ? s.workouts : d.workouts)
+    .map(w => ({ name: String(w.name || '?'), lifts: (w.lifts || []).filter(id => out.lifts[id]), rotate: w.rotate !== false, days: Array.isArray(w.days) ? w.days.filter(n => Number.isInteger(n) && n >= 0 && n <= 6) : [] }));
+  if (!out.workouts.some(w => w.rotate)) out.workouts[0].rotate = true;
+  out.nextIdx = Number.isInteger(s.nextIdx) ? Math.min(Math.max(0, s.nextIdx), out.workouts.length - 1) : out.history.length % out.workouts.length;
+  if (out.workouts[out.nextIdx].rotate === false) out.nextIdx = out.workouts.findIndex(w => w.rotate);
+  out.archive = Array.isArray(s.archive) ? s.archive : [];
+  out.myName = String(out.myName || 'Me').slice(0, 20); out.partnerId = out.partnerId ? String(out.partnerId) : null;
+  out.programName = String(out.programName || 'My program').slice(0, 40);
+  out.currentId = String(out.currentId || 'p1');
+  out.programs = Array.isArray(s.programs) ? s.programs.filter(p => p && p.id).map(p => ({ id: String(p.id), name: String(p.name || 'Program').slice(0, 40), data: p.data || null })) : [];
+  if (!out.programs.some(p => p.id === out.currentId)) out.programs.unshift({ id: out.currentId, name: out.programName, data: null });
+  return out;
+}
+function roundTo(x, step) { return Math.round(x / step) * step; }
+function isHit(l) { const ok = a => a.length === l.sets && a.every(r => r != null && r >= l.reps); return ok(l.log) && (!l.logR || ok(l.logR)); }
+function isBw(lift) { return !!lift && lift.kind === 'bw'; }
+function isTemp(lift) { return !isBw(lift) && (lift.sets !== lift.baseSets || lift.reps !== lift.baseReps); }
+function dropReps(lift) { return lift.reps > 5 ? lift.reps - 2 : 3; }
+
+/* Bodyweight progression: add `step` reps per set once `every` weeks have passed since the last step, until `target`. */
+function dayNum(ts) { const d = new Date(ts); return Math.round(new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime() / 86400000); }
+function bwDue(l, now) { return !!l.since && dayNum(now == null ? Date.now() : now) - dayNum(l.since) >= l.every * 7; }
+function bwDaysLeft(l, now) { return l.since ? Math.max(0, l.every * 7 - (dayNum(now == null ? Date.now() : now) - dayNum(l.since))) : l.every * 7; }
+function bwChoices(l, hit, now) {
+  if (hit) { if (l.step < 1 || l.reps >= l.target) return ['repeat']; return bwDue(l, now) ? ['add', 'repeat'] : ['repeat', 'add']; }
+  const c = ['repeat']; if (l.step >= 1 && l.reps - l.step >= 1) c.push('back'); return c;
+}
+function bwApply(l, choice, hit, now) {
+  const t = now == null ? Date.now() : now, n = { ...l, since: l.since || t };
+  if (choice === 'add') { n.reps = Math.min(l.target, l.reps + l.step); n.baseReps = n.reps; n.since = t; n.fails = 0; }
+  else if (choice === 'back') { n.reps = Math.max(1, l.reps - l.step); n.baseReps = n.reps; n.since = t; n.fails = 0; }
+  else { n.fails = hit ? 0 : l.fails + 1; }
+  return n;
+}
+
+/* Which "next time" choices to offer, first one is the suggestion. */
+function choicesFor(lift, hit, settings) {
+  if (lift.ov) return isBw(lift) ? ['ovkeep'] : ['ovkeep', 'ovadd'];
+  if (isBw(lift)) return bwChoices(lift, hit);
+  if (hit) { const c = ['add', 'repeat']; if (isTemp(lift)) c.push('base'); return c; }
+  const c = (lift.fails + 1 >= settings.failLimit) ? ['deload', 'repeat'] : ['repeat', 'deload'];
+  if (lift.reps > 3) c.push('reps3');
+  if (lift.sets > 3) c.push('sets3');
+  if (isTemp(lift)) c.push('base');
+  c.push('add');
+  return c;
+}
+/* Returns the lift's state for next time. `lift.w` is the weight just used. */
+function applyChoice(lift, choice, hit, settings) {
+  if (isBw(lift)) return bwApply(lift, choice, hit);
+  const n = { ...lift };
+  if (choice === 'add') { n.w = lift.w + lift.inc; n.fails = 0; }
+  else if (choice === 'repeat') { n.fails = hit ? 0 : lift.fails + 1; }
+  else if (choice === 'deload') { n.w = Math.max(lift.bar ? settings.bar : 0, roundTo(lift.w * (1 - settings.deloadPct / 100), 5)); n.fails = 0; n.sets = lift.baseSets; n.reps = lift.baseReps; }
+  else if (choice === 'reps3') { n.reps = dropReps(lift); n.fails = 0; }
+  else if (choice === 'sets3') { n.sets = 3; n.fails = 0; }
+  else if (choice === 'base') { n.sets = lift.baseSets; n.reps = lift.baseReps; n.fails = 0; }
+  return n;
+}
+function platesPerSide(w, bar) {
+  let side = (w - bar) / 2; if (side < 0) return null;
+  const out = [];
+  for (const p of [45, 35, 25, 10, 5, 2.5]) { while (side >= p - 1e-9) { out.push(p); side -= p; } }
+  return { plates: out, left: Math.round(side * 100) / 100 };
+}
+function fmtTime(s) { s = Math.max(0, Math.round(s)); return Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0'); }
+/*END*/
+
+const KEY = 'barbell-logbook-v1';
+let state = defaultState();
+let tab = 'today', confirming = null, docRef = null, dirty = false, writing = false, saveTimer = null, saveStatus = 'device';
+let alertedMap = { a: false, p: false }, solo = false, audioCtx = null, wakeLock = null, toastTimer = null, edit = null, lpTimer = null, lpFired = false, sel = null, psel = null, histMode = 'program', ovForm = null, wTab = 'lifts';
+const $ = id => document.getElementById(id);
+const clone = o => JSON.parse(JSON.stringify(o));
+const esc = t => String(t).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
+const anyLift = id => state.lifts[id] || ((typeof partnerEntry === 'function' && partnerEntry()) ? partnerEntry().data.lifts[id] : undefined);
+const liftName = id => (anyLift(id) && anyLift(id).name) || (LIB[id] && LIB[id].name) || 'Removed lift';
+const total = () => Math.max(1, state.settings.total), perWeek = () => Math.max(1, state.settings.perWeek);
+const liftIsBw = id => isBw(anyLift(id));
+
+/* ---------- rotation: A/B workouts rotate in order and only advance when one is saved. Extra workouts never touch it. ---------- */
+const rotIdxs = () => state.workouts.map((w, i) => w.rotate !== false ? i : -1).filter(i => i >= 0);
+function nextRot(from) { const r = rotIdxs(); if (!r.length) return 0; const n = r.find(i => i > from); return n !== undefined ? n : r[0]; }
+const rotDone = () => state.history.filter(e => !e.extra).length;
+const sameDay = (a, b) => new Date(a).toDateString() === new Date(b).toDateString();
+function suggestedIdx() {
+  const wd = new Date().getDay();
+  for (let i = 0; i < state.workouts.length; i++) { const w = state.workouts[i];
+    if (w.rotate === false && (w.days || []).includes(wd) && !state.history.some(e => e.type === w.name && sameDay(e.date, Date.now()))) return i; }
+  return state.nextIdx;
+}
+const curIdx = () => (sel != null && state.workouts[sel]) ? sel : suggestedIdx();
+
+/* ---------- rest time display: minutes (m:ss) or seconds ---------- */
+const ru = () => state.settings.restUnit === 'sec' ? 'sec' : 'min';
+const restStepSec = () => [15, 30, 60].includes(state.settings.restStep) ? state.settings.restStep : 15;
+const restVal = sec => ru() === 'min' ? fmtTime(sec) : `${sec}<small>s</small>`;
+function restField(label, id, rt, lid, sec, ph) {
+  const attrs = `data-act="set-rt" data-rt="${rt}" data-id="${lid}"`;
+  if (ru() === 'sec') return `<label class="field" for="${id}">${label} (seconds)<input type="number" inputmode="numeric" step="15" min="0" id="${id}" ${attrs} value="${sec || ''}" placeholder="${ph || ''}"></label>`;
+  const pm = ph ? Math.floor(ph / 60) : '', ps = ph ? String(ph % 60).padStart(2, '0') : '';
+  return `<div class="field" role="group" aria-labelledby="${id}-l"><span id="${id}-l">${label} (min : sec)</span><div class="mmss">
+    <input type="number" inputmode="numeric" min="0" id="${id}-m" aria-label="${label}, minutes" ${attrs} data-p="m" value="${sec ? Math.floor(sec / 60) : ''}" placeholder="${pm}">
+    <span aria-hidden="true">:</span>
+    <input type="number" inputmode="numeric" min="0" id="${id}-s" aria-label="${label}, seconds" ${attrs} data-p="s" value="${sec ? String(sec % 60).padStart(2, '0') : ''}" placeholder="${ps}"></div></div>`;
+}
+
+/* ---------- programs: the live fields (lifts, workouts, nextIdx, history, setup, total, perWeek) belong to the current program ---------- */
+function orderedLifts() {
+  const seen = [...new Set(state.workouts.flatMap(w => w.lifts))].filter(id => state.lifts[id]);
+  return seen.map((id, k) => ({ id, k })).sort((a, b) => { const x = state.lifts[a.id].ord, y = state.lifts[b.id].ord; return (x == null ? 1e6 : x) - (y == null ? 1e6 : y) || a.k - b.k; }).map(o => o.id);
+}
+function snapshot() { return clone({ lifts: state.lifts, workouts: state.workouts, nextIdx: state.nextIdx, history: state.history, setup: state.setup, total: state.settings.total, perWeek: state.settings.perWeek }); }
+function newProgramData() { const d = defaultState(); return { lifts: d.lifts, workouts: d.workouts, nextIdx: 0, history: [], setup: false, total: d.settings.total, perWeek: d.settings.perWeek }; }
+function archiveHistory(hist, name) { for (const e of hist || []) state.archive.push({ ...clone(e), program: name }); }
+function stashCurrent() { const e = state.programs.find(p => p.id === state.currentId); if (e) { e.name = state.programName; e.data = snapshot(); } }
+function loadData(data) {
+  const n = normalize({ lifts: data.lifts, workouts: data.workouts, nextIdx: data.nextIdx, history: data.history, setup: data.setup, settings: { ...state.settings, total: data.total || state.settings.total, perWeek: data.perWeek || state.settings.perWeek } });
+  state.lifts = n.lifts; state.workouts = n.workouts; state.nextIdx = n.nextIdx; state.history = n.history; state.setup = !!data.setup;
+  state.settings.total = n.settings.total; state.settings.perWeek = n.settings.perWeek;
+}
+function switchTo(id) {
+  const e = state.programs.find(p => p.id === id); if (!e || id === state.currentId) return;
+  stashCurrent(); loadData(e.data || newProgramData());
+  state.currentId = id; state.programName = e.name; e.data = null;
+}
+function addProgram(name, data) {
+  const id = 'p' + Date.now().toString(36);
+  state.programs.push({ id, name: name.slice(0, 40), data }); switchTo(id);
+}
+const progInfo = p => { const d = p.id === state.currentId ? { workouts: state.workouts, history: state.history } : (p.data || newProgramData()); return `${plural(d.workouts.length, 'workout')} · ${d.history.length} logged`; };
+const myName = () => state.myName || 'Me';
+const partnerEntry = () => { const e = state.programs.find(p => p.id === state.partnerId); return e && e.id !== state.currentId && e.data ? e : null; };
+const liftsOf = who => (who === 'p' && partnerEntry()) ? partnerEntry().data.lifts : state.lifts;
+const lifterOf = who => (who === 'p' && state.active && state.active.partner) ? state.active.partner : state.active;
+function restFor(id, who) { const L = liftsOf(who)[id]; if (L && L.rest > 0) return L.rest; return isBw(L) ? state.settings.restBw : state.settings.rest; }
+const partIdx = pe => { const ws = pe.data.workouts; return (psel != null && ws[psel]) ? psel : Math.min(Math.max(0, pe.data.nextIdx || 0), ws.length - 1); };
+function normPartner(pe) { const d = pe.data, n = normalize({ lifts: d.lifts, workouts: d.workouts, nextIdx: d.nextIdx, history: d.history, setup: d.setup, settings: { ...state.settings, total: d.total, perWeek: d.perWeek } }); pe.data.lifts = n.lifts; pe.data.workouts = n.workouts; }
+
+function loadLocal() { try { const r = localStorage.getItem(KEY); return r ? normalize(JSON.parse(r)) : null; } catch (e) { return null; } }
+function persist() {
+  state.updatedAt = Date.now();
+  try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) {}
+  dirty = true; clearTimeout(saveTimer); saveTimer = setTimeout(flush, 600);
+}
+async function flush() {
+  if (!docRef || writing || !dirty) return;
+  writing = true; dirty = false;
+  const was = saveStatus;
+  try { await docRef.set(clone(state)); saveStatus = 'account'; }
+  catch (e) { saveStatus = 'device'; }
+  writing = false;
+  if (dirty) { clearTimeout(saveTimer); saveTimer = setTimeout(flush, 600); }
+  if (tab === 'settings' && was !== saveStatus && !(document.activeElement && document.activeElement.matches('input'))) render();
+}
+async function pullRemote() {
+  if (!docRef || dirty || writing) return;
+  try {
+    const snap = await docRef.get();
+    if (snap.exists) {
+      const remote = snap.data();
+      saveStatus = 'account';
+      if ((remote.updatedAt || 0) > (state.updatedAt || 0)) {
+        state = normalize(clone(remote));
+        try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) {}
+        render();
+      }
+    } else if (state.setup || state.history.length) { dirty = true; flush(); }
+  } catch (e) {}
+}
+async function connect() {
+  try {
+    if (!window.claude || !window.claude.use) return;
+    const [db, user] = await Promise.all([window.claude.use('db'), window.claude.use('user')]);
+    if (!db || !user) return;
+    const uid = await user.id();
+    if (!uid) return;
+    docRef = db.doc('data/users/' + uid + '/state');
+    await pullRemote();
+    if (tab === 'settings') render();
+  } catch (e) {}
+}
+
+/* ---------- rendering ---------- */
+const unit = w => `${w}<small>lb</small>`;
+function schemeText(l) { return `${l.sets}×${l.reps}${(l.perSide || l.ps) ? ' each side' : ''}`; }
+function platesHtml(id, w) {
+  if (!anyLift(id) || !anyLift(id).bar) return '';
+  const p = platesPerSide(w, state.settings.bar);
+  if (!p) return `<div class="plates">Lighter than the ${state.settings.bar} lb bar</div>`;
+  if (!p.plates.length) return `<div class="plates">Empty bar</div>`;
+  return `<div class="plates"><span>Each side</span>${p.plates.map(x => `<span class="plate p${x}">${x}</span>`).join('')}${p.left ? `<span>+${p.left} short</span>` : ''}</div>`;
+}
+function stepper(id, w, step, who) {
+  return `<div class="stepper"><button type="button" class="sq" data-act="w" data-who="${who || 'a'}" data-id="${id}" data-d="${-step}" aria-label="Less weight">−</button>
+    <div class="val">${unit(w)}</div>
+    <button type="button" class="sq" data-act="w" data-who="${who || 'a'}" data-id="${id}" data-d="${step}" aria-label="More weight">+</button></div>`;
+}
+function repStepper(id, reps, who) {
+  return `<div class="stepper"><button type="button" class="sq" data-act="bwr" data-who="${who || 'a'}" data-id="${id}" data-d="-1" aria-label="Fewer reps">−</button>
+    <div class="val">${reps}<small>reps</small></div>
+    <button type="button" class="sq" data-act="bwr" data-who="${who || 'a'}" data-id="${id}" data-d="1" aria-label="More reps">+</button></div>`;
+}
+function restStep(k, val) {
+  const st = restStepSec();
+  return `<div class="stepper"><button type="button" class="sq" data-act="rest" data-k="${k}" data-d="${-st}" aria-label="Less rest">−</button><div class="val">${restVal(val)}</div><button type="button" class="sq" data-act="rest" data-k="${k}" data-d="${st}" aria-label="More rest">+</button></div>`;
+}
+const stepFor = (id, who) => { const inc = liftsOf(who)[id].inc; return inc > 0 && inc % 5 !== 0 ? 2.5 : 5; };
+const plural = (n, w) => `${n} ${w}${n === 1 ? '' : 's'}`;
+function bwLabel(cur, choice, hit) {
+  const to = Math.min(cur.target, cur.reps + cur.step);
+  if (choice === 'add') return `Add ${plural(cur.step, 'rep')} per set (${cur.reps} → ${to} reps)${bwDue(cur) ? '' : ', ahead of schedule'}`;
+  if (choice === 'back') return `Drop back to ${cur.reps - cur.step} reps per set`;
+  if (!hit) return `Repeat ${cur.reps} reps per set`;
+  if (cur.step < 1) return `Keep ${cur.reps} reps per set`;
+  if (cur.reps >= cur.target) return `At your ${cur.target}-rep target, stay at ${cur.reps}`;
+  return bwDue(cur) ? `Stay at ${cur.reps} reps per set` : `Stay at ${cur.reps} reps (next step in ${plural(bwDaysLeft(cur), 'day')})`;
+}
+function choiceLabel(l, choice, hit, lifts) {
+  const cur = { ...(lifts || state.lifts)[l.id], w: l.w, sets: l.sets, reps: l.reps };
+  if (cur.ov) return choice === 'ovadd' ? `Add ${cur.ov.inc || 5} lb (${l.w + (cur.ov.inc || 5)} lb next time)` : (isBw(cur) ? `Keep ${l.reps} reps per set` : `Keep ${l.w} lb for the next workout`);
+  if (isBw(cur)) return bwLabel(cur, choice, hit);
+  const n = applyChoice(cur, choice, hit, state.settings);
+  const res = `${n.w} lb, ${n.sets}×${n.reps}`;
+  return ({ add: hit ? `Add ${cur.inc} lb` : `Add ${cur.inc} lb anyway`, repeat: 'Repeat this weight', deload: `Deload ${state.settings.deloadPct}%`,
+    reps3: `Drop to ${dropReps(cur)} reps per set for now`, sets3: 'Drop to 3 sets for now', base: `Go back to ${cur.baseSets}×${cur.baseReps}` })[choice] + ` (${res})`;
+}
+const titleFor = name => (name.length <= 2 ? 'Workout ' + name : name);
+
+function renderHeader() {
+  const n = rotDone(), a = state.active, T = total();
+  $('hdr-prog').style.width = Math.min(100, n / T * 100) + '%';
+  if (tab === 'history') { $('hdr-eyebrow').textContent = `${n} of ${T} workouts done`; $('hdr-title').textContent = 'History'; return; }
+  if (tab === 'program') { $('hdr-eyebrow').textContent = `${state.workouts.length} workouts in rotation`; $('hdr-title').textContent = 'Program'; return; }
+  if (tab === 'settings') { $('hdr-eyebrow').textContent = `${Math.ceil(T / perWeek())}-week program`; $('hdr-title').textContent = 'Settings'; return; }
+  if (n >= T && !a) { $('hdr-eyebrow').textContent = `${T} of ${T} workouts done`; $('hdr-title').textContent = 'Program complete'; return; }
+  const wi = a ? (Number.isInteger(a.widx) ? a.widx : state.nextIdx) : curIdx(), ex = state.workouts[wi] && state.workouts[wi].rotate === false;
+  $('hdr-eyebrow').textContent = ex ? `${state.programName} · Extra workout` : `${state.programName} · Week ${Math.floor(n / perWeek()) + 1} of ${Math.ceil(T / perWeek())} · Workout ${n + 1} of ${T}`;
+  $('hdr-title').textContent = titleFor(a ? a.type : state.workouts[wi].name);
+}
+
+function ovStatus(o) {
+  if (!o.until) return 'No end date';
+  const n = dayNum(o.until) - dayNum(Date.now()), end = new Date(o.until).toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
+  return n > 0 ? `Ends ${end} (${plural(n, 'day')} left)` : n === 0 ? `Ends today (${end})` : `Planned end was ${end}. End the override to go back to your program.`;
+}
+function ovCard(id) {
+  const L = state.lifts[id], o = L.ov, bw = isBw(L);
+  return `<div class="card ovcard"><div class="row"><div><div class="lift-name">${esc(L.name)}</div>
+      <div class="scheme"><span class="chip ov">Override</span> ${o.sets}×${o.reps}${L.perSide ? ' each side' : ''}${bw ? ' · bodyweight' : ''}</div>
+      <div class="scheme">${esc(ovStatus(o))}</div></div>${bw ? repStepper(id, o.reps) : stepper(id, o.w, stepFor(id))}</div>
+    ${bw ? '' : platesHtml(id, o.w)}
+    ${o.note ? `<div class="note nt">${esc(o.note)}</div>` : ''}
+    <div class="note">Your program is paused at ${bw ? '' : L.w + ' lb, '}${L.sets}×${L.reps}. Nothing changes there until you end the override.</div>
+    ${confirming === 'ovend' + id ? `<div class="btns"><button type="button" class="btn danger" data-act="ov-end" data-id="${id}">End override, back to program</button><button type="button" class="btn" data-act="cancel-confirm">Keep override</button></div>`
+      : `<div class="btns"><button type="button" class="btn" data-act="ov-open" data-id="${id}">Edit override</button><button type="button" class="btn" data-act="ask" data-what="ovend${id}">End override</button></div>`}</div>`;
+}
+function ovFormHtml() {
+  const f = ovForm, L = state.lifts[f.id], bw = isBw(L);
+  return `<div class="card ovform"><h2>${f.edit ? 'Edit override' : 'Override ' + esc(L.name)}</h2>
+    <p class="note">A temporary change that pauses this lift's program. Your program weight and progress stay where they are until you end the override.</p>
+    ${bw ? '' : `<label class="field" for="ov-w">Weight (lb)<input type="number" inputmode="decimal" step="2.5" min="0" id="ov-w" value="${f.w}"></label>
+    <div class="pick" role="group" aria-label="Back off from program weight"><span class="note">Back off</span>${[10, 15, 20].map(pc => `<button type="button" class="btn small" data-act="ov-pct" data-p="${pc}">${pc}%</button>`).join('')}</div>`}
+    <div class="grid2"><label class="field" for="ov-sets">Sets<input type="number" inputmode="numeric" step="1" min="1" max="10" id="ov-sets" value="${f.sets}"></label>
+      <label class="field" for="ov-reps">Reps${L.perSide ? ' per side' : ''}<input type="number" inputmode="numeric" step="1" min="1" max="100" id="ov-reps" value="${f.reps}"></label>
+      <label class="field" for="ov-weeks">Weeks (0 = no end date)<input type="number" inputmode="numeric" step="1" min="0" max="26" id="ov-weeks" value="${f.weeks}"></label>
+      ${bw ? '' : `<label class="field" for="ov-inc">Add per workout (lb)<input type="number" inputmode="decimal" step="2.5" min="0" id="ov-inc" value="${f.inc}"></label>`}</div>
+    <label class="field" for="ov-note">Reason (optional)<input type="text" id="ov-note" maxlength="120" value="${esc(f.note || '')}" placeholder="e.g. stalled at 100 for 5 reps"></label>
+    <div class="btns"><button type="button" class="btn primary" data-act="ov-save">${f.edit ? 'Save override' : 'Start override'}</button><button type="button" class="btn" data-act="ov-cancel">Cancel</button></div></div>`;
+}
+function partnerRow(id) {
+  const pe = partnerEntry(), PL = pe.data.lifts[id];
+  if (PL && !pe.data.workouts[partIdx(pe)].lifts.includes(id)) return `<div class="note prow">Not in ${esc(pe.name)}'s workout today.</div>`;
+  if (!PL) return `<div class="note prow">${esc(pe.name)} doesn't have this lift in their program.</div>`;
+  const v = PL.ov || PL, bw = isBw(PL);
+  return `<div class="row prow"><div><div class="lname">${esc(pe.name)}</div><div class="scheme">${v.sets}×${v.reps}${PL.perSide ? ' each side' : ''}${PL.ov ? ' · override' : ''}${bw ? ' · bodyweight' : ''}</div></div>${bw ? repStepper(id, v.reps, 'p') : stepper(id, v.w, stepFor(id, 'p'), 'p')}</div>${bw ? '' : platesHtml(id, v.w)}`;
+}
+function partnerPick(pe, wk) {
+  const ws = pe.data.workouts, pi = partIdx(pe);
+  return `<div class="card"><div class="lift-name">${esc(pe.name)}'s workout</div>${ws.length > 1 ? `<div class="pick" role="group" aria-label="Choose ${esc(pe.name)}'s workout">${ws.map((w, i) => `<button type="button" class="btn" data-act="ppick" data-i="${i}" aria-pressed="${i === pi}">${esc(w.name)}${w.rotate === false ? ' <small>extra</small>' : ''}</button>`).join('')}</div>` : ''}
+    <p class="note">${ws[pi].name === wk.name ? `Same workout as you.` : `${esc(pe.name)} does ${esc(ws[pi].name)} while you do ${esc(wk.name)}.`} ${esc(pe.name)}'s next in rotation is ${esc(ws[Math.min(pe.data.nextIdx || 0, ws.length - 1)].name)}.</p></div>`;
+}
+function todayLiftCard(id) {
+  const L = state.lifts[id];
+  let html = L.ov ? ovCard(id) : baseLiftCard(id);
+  if (partnerEntry() && !solo) html = html.replace(/<\/div>\s*$/, partnerRow(id) + '</div>');
+  if (ovForm && ovForm.id === id) return html + ovFormHtml();
+  if (!L.ov) html = html.replace(/<\/div>\s*$/, `<button type="button" class="btn small quiet" data-act="ov-open" data-id="${id}">Override this lift for a while…</button></div>`);
+  return html;
+}
+function baseLiftCard(id) {
+  const l = state.lifts[id];
+  if (isBw(l)) {
+    return `<div class="card"><div class="row"><div><div class="lift-name">${esc(l.name)}</div><div class="scheme">${schemeText(l)} · bodyweight</div>
+        <div class="scheme">${l.step < 1 ? 'Reps stay the same until you change them' : `+${plural(l.step, 'rep')} per set every ${plural(l.every, 'week')} · target ${l.target}`}</div></div>${repStepper(id, l.reps)}</div>
+      <div class="row">${l.step < 1 ? '' : l.reps >= l.target ? `<span class="chip good">At target</span>` : `<span class="chip">${bwDue(l) ? 'Ready to step up if you hit every set' : `Next step in ${plural(bwDaysLeft(l), 'day')}`}</span>`}
+      ${l.fails ? `<span class="chip bad">Missed ${l.fails} time${l.fails > 1 ? 's' : ''} at ${l.reps}</span>` : ''}</div></div>`;
+  }
+  return `<div class="card"><div class="row"><div><div class="lift-name">${esc(l.name)}</div><div class="scheme">${schemeText(l)} · +${l.inc} lb when you hit every set</div></div>${stepper(id, l.w, stepFor(id))}</div>
+          ${platesHtml(id, l.w)}
+          ${l.fails ? `<div><span class="chip bad">Missed ${l.fails} time${l.fails > 1 ? 's' : ''} at this weight</span></div>` : ''}
+          ${isTemp(l) ? `<div class="row"><span class="chip">Temporary ${schemeText(l)}</span><button type="button" class="btn small" data-act="to-base" data-id="${id}">Back to ${l.baseSets}×${l.baseReps}</button></div>` : ''}</div>`;
+}
+
+function setsRow(l, i, side, who) {
+  who = who || 'a';
+  const arr = arrOf(l, side), lab = side === 'L' ? 'Left' : side === 'R' ? 'Right' : '';
+  return `${lab ? `<div class="scheme">${lab}</div>` : ''}<div class="sets">${Array.from({ length: l.sets }, (_, s) => { const r = arr[s];
+    return `<button type="button" class="set ${r == null ? '' : r >= l.reps ? 'full' : 'part'}${edit && edit.who === who && edit.i === i && edit.s === s && (edit.side || '') === side ? ' editing' : ''}" data-act="set" data-who="${who}" data-i="${i}" data-s="${s}" data-side="${side}" aria-label="${lab ? lab + ' ' : ''}Set ${s + 1}: ${r == null ? 'not logged' : r + ' reps'}">${r == null ? l.reps : r}</button>`; }).join('')}</div>`;
+}
+function notesHtml(a, perLift) {
+  return `<div class="card"><label class="field" for="wk-notes">Workout notes<textarea id="wk-notes" data-act="wk-note" rows="4" placeholder="How it felt, form cues, pain, gym setup, anything to remember">${esc(a.notes || '')}</textarea></label></div>` +
+    (perLift ? a.lifts.map((l, i) => `<div class="card"><label class="field" for="ln-${i}">${esc(liftName(l.id))} note<textarea id="ln-${i}" data-act="lift-note" data-i="${i}" rows="2">${esc(l.note || '')}</textarea></label></div>`).join('') : '');
+}
+function reviewCard(l, LA, who) {
+  const lifts = liftsOf(who), hit = isHit(l), bw = isBw(lifts[l.id]), opts = choicesFor({ ...lifts[l.id], sets: l.sets, reps: l.reps }, hit, state.settings), sel = LA.choices[l.id] || opts[0];
+  return `<div class="card"><div class="row"><div class="lift-name">${esc(liftName(l.id))}</div><span class="chip ${hit ? 'good' : 'bad'}">${hit ? 'All sets hit' : 'Missed reps'}</span></div>
+    ${l.ov ? '<div><span class="chip ov">Override</span></div>' : ''}<div class="logline">${bw ? 'Bodyweight' : l.w + ' lb'} · ${l.logR ? 'L ' : ''}${l.log.map(r => r == null ? '–' : r).join('  ')}${l.logR ? ' · R ' + l.logR.map(r => r == null ? '–' : r).join('  ') : ''}</div>
+    <label class="field" for="next-${who}-${l.id}">Next time<select id="next-${who}-${l.id}" data-act="choice" data-who="${who}" data-id="${l.id}">${opts.map(o => `<option value="${o}"${o === sel ? ' selected' : ''}>${esc(choiceLabel(l, o, hit, lifts))}</option>`).join('')}</select></label></div>`;
+}
+function lifterBlock(l, i, who, single) {
+  const bw = liftIsBw(l.id), name = who === 'p' ? state.active.partner.name : myName();
+  const ed = edit && edit.who === who && edit.i === i ? `<div class="erbar"><span class="note">${edit.side === 'L' ? 'Left ' : edit.side === 'R' ? 'Right ' : ''}set ${edit.s + 1} reps</span>
+      <div class="stepper"><button type="button" class="sq" data-act="er" data-d="-1" aria-label="One rep less">−</button>
+      <input class="erin" type="number" inputmode="numeric" min="0" max="200" id="er-val" data-act="er-set" aria-label="Reps for set ${edit.s + 1}" value="${arrOf(l, edit.side)[edit.s] == null ? l.reps : arrOf(l, edit.side)[edit.s]}">
+      <button type="button" class="sq" data-act="er" data-d="1" aria-label="One rep more">+</button></div>
+      <button type="button" class="btn small" data-act="edit-done">Done</button></div>` : '';
+  return `<div class="lblock"><div class="row"><div>${single ? `<div class="lift-name">${esc(liftName(l.id))}</div>` : `<div class="lname">${esc(name)}</div>`}<div class="scheme">${schemeText(l)}${bw ? ' · bodyweight' : ''}${l.ov ? ' <span class="chip ov">Override</span>' : ''}</div></div>${bw ? '' : stepper(l.id, l.w, stepFor(l.id, who), who)}</div>
+    ${platesHtml(l.id, l.w)}
+    ${l.ps ? setsRow(l, i, 'L', who) + setsRow(l, i, 'R', who) : setsRow(l, i, '', who)}${ed}</div>`;
+}
+function whereIs(LA) {
+  const idx = LA.lifts.findIndex(x => x.log.some(v => v == null) || (x.logR && x.logR.some(v => v == null)));
+  if (idx < 0) return null;
+  const l = LA.lifts[idx]; let n = 0; for (let k = 0; k < l.sets; k++) { if (l.log[k] != null && (!l.logR || l.logR[k] != null)) n++; }
+  return { l, n: Math.min(n + 1, l.sets) };
+}
+function statusPanel(a) {
+  const row = (who, LA, name) => { const w = whereIs(LA);
+    return `<div class="tline"><div><div class="lname">${esc(name)}</div><div class="scheme">${w ? `${esc(liftName(w.l.id))} · set ${w.n} of ${w.l.sets} · ${liftIsBw(w.l.id) ? '' : w.l.w + ' lb × '}${w.l.reps} reps${w.l.ps ? ' each side' : ''}` : 'All sets logged'}</div></div><div class="tstat" id="ts-${who}"></div></div>`; };
+  return `<div class="card tpanel" aria-live="polite">${row('a', a, myName())}${row('p', a.partner, a.partner.name)}</div>`;
+}
+function statText(LA) {
+  if (!whereIs(LA)) return ['Done', ''];
+  if (!LA.timerEnd) return ['Lifting', ''];
+  const left = (LA.timerEnd - Date.now()) / 1000;
+  return left > 0 ? ['Resting ' + fmtTime(Math.ceil(left)), ''] : ["Rest's over", 'go'];
+}
+function viewToday() {
+  const n = rotDone(), a = state.active;
+  if (n >= total() && !a) {
+    return `<div class="card"><h2>All ${total()} workouts logged</h2><p class="note">Your final weights are in History. Starting again keeps your current weights. The old log stays under All workouts in History.</p>
+      ${confirming === 'restart' ? `<div class="btns"><button type="button" class="btn danger" data-act="restart-yes">Clear log and restart</button><button type="button" class="btn" data-act="cancel-confirm">Keep it</button></div>`
+        : `<button type="button" class="btn primary" data-act="ask" data-what="restart">Start the program again</button>`}</div>`;
+  }
+  if (!a) {
+    const ci = curIdx(), wk = state.workouts[ci], ids = wk.lifts, hasBw = ids.some(liftIsBw);
+    const lastE = allEntries()[0];
+    const pe = partnerEntry();
+    return (pe ? `<div class="banner">${solo ? 'Training solo today.' : `Training together with <strong>${esc(pe.name)}</strong>. Set their weights on each lift below.`} <button type="button" class="btn small" data-act="solo-toggle">${solo ? 'Train together' : 'Go solo today'}</button></div>` : '') + (lastE ? (dayNum(Date.now()) - dayNum(new Date(lastE.e.date).getTime()) >= 8 ? `<div class="banner">Bar's still here. So are you.</div>` : '') + `<p class="note">Last workout: ${esc(entryTitle(lastE.e))}, ${fmtDate(lastE.e.date)} (${agoText(lastE.e.date)}).</p>` : '') + (state.setup ? '' : `<div class="banner"><strong>These starting weights are placeholders.</strong> Set your own with − and + before your first workout. Bodyweight lifts take reps instead.</div>`) +
+      (state.workouts.length > 1 ? `<div class="pick" role="group" aria-label="Choose today's workout">${state.workouts.map((w, i) => `<button type="button" class="btn" data-act="pick" data-i="${i}" aria-pressed="${i === ci}">${esc(w.name)}${w.rotate === false ? ' <small>extra</small>' : ''}</button>`).join('')}</div>` : '') +
+      (wk.rotate === false ? `<p class="note">${esc(wk.name)} is an extra workout. It does not change your rotation. Next in the rotation: ${esc(state.workouts[state.nextIdx].name)}.</p>` : ci !== state.nextIdx ? `<p class="note">Next in the rotation is ${esc(state.workouts[state.nextIdx].name)}.</p>` : '') +
+      (ids.length ? '' : `<div class="card"><h2>No lifts in this workout</h2><p class="note">Add lifts to it on the Program tab.</p></div>`) +
+      (pe && !solo ? partnerPick(pe, wk) : '') +
+      ids.map(todayLiftCard).join('') +
+      (pe && !solo ? pe.data.workouts[partIdx(pe)].lifts.filter(id => !ids.includes(id) && pe.data.lifts[id]).map(id => `<div class="card"><div class="lift-name">${esc(liftName(id))}</div>${partnerRow(id)}</div>`).join('') : '') +
+      `<div class="card"><div class="row"><div><div class="lift-name">Rest</div><div class="scheme">Starts when you log a set</div></div>${restStep('rest', state.settings.rest)}</div>
+        ${hasBw ? `<div class="row"><div><div class="lift-name">Bodyweight rest</div><div class="scheme">Pull-ups, push-ups, dips and similar</div></div>${restStep('restBw', state.settings.restBw)}</div>` : ''}
+        <p class="note">A lift with its own rest time on the Program tab uses that instead.</p></div>
+      ${ids.length ? `<button type="button" class="btn primary" data-act="start">Start ${esc(titleFor(wk.name))}</button>` : ''}`;
+  }
+  if (a.review) {
+    return `<div class="banner">Check each lift and pick what happens next time. The first option is the program's rule.</div>` +
+      (a.partner ? `<h2>${esc(myName())}</h2>` : '') + a.lifts.map(l => reviewCard(l, a, 'a')).join('') +
+      (a.partner ? `<h2>${esc(a.partner.name)}</h2>` + a.partner.lifts.map(l => reviewCard(l, a.partner, 'p')).join('') : '') +
+      notesHtml(a, false) + `<div class="btns"><button type="button" class="btn primary" data-act="save">Save workout</button><button type="button" class="btn" data-act="unreview">Back to logging</button></div>`;
+  }
+  const liftsHtml = (a.partner ? statusPanel(a) : '') + a.lifts.map((l, i) => {
+    const j = a.partner ? a.partner.lifts.findIndex(x => x.id === l.id) : -1;
+    return `<div class="card">${a.partner ? `<div class="lift-name">${esc(liftName(l.id))}</div>` : ''}${lifterBlock(l, i, 'a', !a.partner)}${j >= 0 ? lifterBlock(a.partner.lifts[j], j, 'p', false) : (a.partner ? `<div class="note">Not in ${esc(a.partner.name)}'s workout today.</div>` : '')}</div>`; }).join('') +
+    (a.partner ? a.partner.lifts.map((l, j) => a.lifts.some(x => x.id === l.id) ? '' : `<div class="card"><div class="lift-name">${esc(liftName(l.id))}</div><div class="note">Only ${esc(a.partner.name)} (${esc(a.partner.type)})</div>${lifterBlock(l, j, 'p', false)}</div>`).join('') : '') +
+    `<p class="note">Tap a set when you finish it. Tap again to lower the rep count by one. Press and hold a set to type its rep count.</p>`;
+  const hasNote = !!(a.notes || a.lifts.some(l => l.note));
+  const seg = `<div class="pick" role="group" aria-label="Workout view"><button type="button" class="btn" data-act="wtab" data-v="lifts" aria-pressed="${wTab === 'lifts'}">Lifts</button><button type="button" class="btn" data-act="wtab" data-v="notes" aria-pressed="${wTab === 'notes'}">Notes${hasNote ? ' •' : ''}</button></div>`;
+  return seg + (wTab === 'notes' ? notesHtml(a, true) : liftsHtml) + `
+    <div class="stack"><button type="button" class="btn primary" data-act="review">Finish workout</button>
+    ${confirming === 'cancel' ? `<div class="btns"><button type="button" class="btn danger" data-act="cancel-yes">Discard this workout</button><button type="button" class="btn" data-act="cancel-confirm">Keep going</button></div>`
+      : `<button type="button" class="btn quiet" data-act="ask" data-what="cancel">Cancel workout</button>`}</div>`;
+}
+
+const fmtDate = iso => { const d = new Date(iso); return d.toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' }) + ' · ' + d.toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit' }); };
+const agoText = iso => { const n = dayNum(Date.now()) - dayNum(new Date(iso).getTime()); return n <= 0 ? 'today' : n === 1 ? 'yesterday' : n + ' days ago'; };
+const entryTitle = e => e.extra ? `${e.type} · extra` : `Workout ${e.n} · ${e.type}`;
+/* Every saved workout from every program, including logs cleared by a restart or reset, newest first. */
+function allEntries() {
+  const out = state.history.map(e => ({ e, prog: state.programName }));
+  for (const p of state.programs) if (p.id !== state.currentId && p.data && Array.isArray(p.data.history)) for (const e of p.data.history) out.push({ e, prog: p.name });
+  for (const e of state.archive) out.push({ e, prog: e.program || 'Earlier program' });
+  return out.sort((a, b) => new Date(b.e.date) - new Date(a.e.date));
+}
+const liftSummary = e => e.lifts.map(l => (l.name || liftName(l.id)) + (l.bw ? '' : ' ' + l.w)).join(', ');
+function entryCard(x, undoable) {
+  const e = x.e;
+  return `<div class="card"><div class="row"><h2>${esc(entryTitle(e))}</h2><span class="note">${fmtDate(e.date)}</span></div>
+      <div class="note">${histMode === 'all' ? esc(x.prog) + ' · ' : ''}${agoText(e.date)}${e.mins ? ' · ' + e.mins + ' min' : ''}</div>
+      ${e.notes ? `<div class="banner nt">${esc(e.notes)}</div>` : ''}
+      ${e.lifts.map(l => `<div class="hist-lift"><span>${esc(l.name || liftName(l.id))} <span class="note">${l.bw ? 'bodyweight' : l.w + ' lb'}</span>${l.ov ? ' <span class="chip ov">Override</span>' : ''}</span><span class="logline">${l.logR ? 'L ' : ''}${l.log.join('  ')}${l.logR ? ' · R ' + l.logR.join('  ') : ''} <span class="chip ${l.hit ? 'good' : 'bad'}">${l.hit ? 'Hit' : 'Miss'}</span></span></div>${l.note ? `<div class="note nt">${esc(l.note)}</div>` : ''}`).join('')}
+      ${undoable && !state.active ? (confirming === 'undo' ? `<div class="btns"><button type="button" class="btn danger" data-act="undo-yes">Remove this workout</button><button type="button" class="btn" data-act="cancel-confirm">Keep it</button></div>`
+        : `<button type="button" class="btn small quiet" data-act="ask" data-what="undo">Undo this workout</button>`) : ''}</div>`;
+}
+function viewHistory() {
+  const all = allEntries();
+  if (!all.length) return `<div class="card"><h2>No workouts yet</h2><p class="note">Each workout you save is dated and kept here with the weight and reps for every set.</p></div>`;
+  const last = all[0], le = last.e;
+  const top = `<div class="card"><div class="eyebrow">Last workout</div><div class="lift-name">${esc(entryTitle(le))}</div><div class="scheme">${fmtDate(le.date)} · ${agoText(le.date)}</div><div class="note">${esc(liftSummary(le))}</div></div>
+    <div class="pick" role="group" aria-label="Which workouts to show"><button type="button" class="btn" data-act="hist-mode" data-v="program" aria-pressed="${histMode === 'program'}">This program</button><button type="button" class="btn" data-act="hist-mode" data-v="all" aria-pressed="${histMode === 'all'}">All workouts (${all.length})</button></div>`;
+  if (histMode === 'all') return top + all.map(x => entryCard(x, false)).join('');
+  const h = state.history;
+  if (!h.length) return top + `<div class="card"><h2>Nothing logged in this program</h2><p class="note">Workouts you save in "${esc(state.programName)}" show up here. Switch to All workouts to see every program.</p></div>`;
+  const first = {}, names = {}, bwIds = {};
+  for (const e of h) for (const l of e.lifts) { if (l.bw) bwIds[l.id] = true; if (!l.ov && !(l.id in first)) first[l.id] = l.bw ? l.reps : l.w; names[l.id] = l.name || liftName(l.id); }
+  const rows = Object.keys(first).map(id => { const L = state.lifts[id], bw = !!bwIds[id], cur = L ? (bw ? L.reps : L.w) : null, d = cur == null ? null : cur - first[id];
+    return `<tr><td>${esc(names[id])}${bw ? ' <span class="note">reps</span>' : ''}</td><td class="n">${first[id]}</td><td class="n">${cur == null ? '–' : cur}</td><td class="n">${d == null ? '–' : (d > 0 ? '+' : '') + d}</td></tr>`; }).join('');
+  return top + `<div class="card"><h2>Progress</h2><table><thead><tr><th>Lift</th><th class="n">First</th><th class="n">Next</th><th class="n">Change</th></tr></thead><tbody>${rows}</tbody></table></div>` +
+    h.slice().reverse().map((e, idx) => entryCard({ e, prog: state.programName }, idx === 0)).join('');
+}
+
+function liftFields(id, l) {
+  const num = (pre, label, act, val, step, min, max, extra) => `<label class="field" for="${pre}-${id}">${label}<input type="number" inputmode="${step % 1 ? 'decimal' : 'numeric'}" step="${step}" min="${min}"${max ? ` max="${max}"` : ''} id="${pre}-${id}" data-act="${act}" data-id="${id}" value="${val}"${extra || ''}></label>`;
+  const ps = `<label class="check" for="ps-${id}"><input type="checkbox" id="ps-${id}" data-act="set-ps" data-id="${id}"${l.perSide ? ' checked' : ''}> Log left and right separately</label>`;
+  const rest = restField('Rest', 'rs-' + id, 'lift', id, l.rest, isBw(l) ? state.settings.restBw : state.settings.rest);
+  if (isBw(l)) {
+    return `<div class="grid3">${num('bs', 'Sets', 'set-sets', l.baseSets, 1, 1, 10)}${num('br', 'Reps now', 'set-reps', l.baseReps, 1, 1, 100)}${num('tg', 'Target reps', 'set-target', l.target, 1, 1, 100)}
+      ${num('st', 'Add reps', 'set-step', l.step, 1, 0, 50)}${num('ev', 'Every (wks)', 'set-every', l.every, 1, 1, 12)}</div><div class="grid2">${rest}</div>${ps}`;
+  }
+  return `<div class="grid4">${num('w', 'Weight', 'set-w', l.w, 2.5, 0, 0)}${num('inc', 'Add', 'set-inc', l.inc, 2.5, 0, 0)}${num('bs', 'Sets', 'set-sets', l.baseSets, 1, 1, 10)}${num('br', 'Reps', 'set-reps', l.baseReps, 1, 1, 30)}</div><div class="grid2">${rest}</div>${ps}`;
+}
+function viewProgram() {
+  if (state.active) return `<div class="card"><h2>Workout in progress</h2><p class="note">Finish or cancel the current workout before changing the program.</p></div>`;
+  const used = new Set(state.workouts.flatMap(w => w.lifts));
+  const allIds = Object.keys(state.lifts).sort((a, b) => state.lifts[a].name.localeCompare(state.lifts[b].name));
+  const spare = allIds.filter(id => !used.has(id) && !LIB[id]);
+  const groups = ['Barbell', 'Dumbbell, machine, weighted', 'Bodyweight', 'Power and plyometrics'];
+  const groupOf = id => { const l = state.lifts[id]; if (l.grp === 'power') return 'Power and plyometrics'; return isBw(l) ? 'Bodyweight' : l.bar ? 'Barbell' : 'Dumbbell, machine, weighted'; };
+  const addOptions = w => groups.map(g => { const ids = allIds.filter(id => !w.lifts.includes(id) && groupOf(id) === g);
+    return ids.length ? `<optgroup label="${g}">${ids.map(id => `<option value="${id}">${esc(state.lifts[id].name)}</option>`).join('')}</optgroup>` : ''; }).join('');
+  const progCard = `<div class="card"><h2>Programs</h2>
+      <label class="field" for="pname">Name of this program<input type="text" id="pname" maxlength="40" data-act="pname" value="${esc(state.programName)}"></label>
+      <p class="note">Everything on this tab, plus your weights and log, is saved under this name automatically. Switch programs below at any time.</p>
+      <div>${state.programs.map((p, pi) => `<div class="wl"><span>${esc(p.id === state.currentId ? state.programName : p.name)} <span class="note">${progInfo(p)}</span></span><div>${state.programs.length > 1 ? `<button type="button" class="sq" data-act="p-up" data-id="${p.id}" aria-label="Move program up"${pi === 0 ? ' disabled' : ''}>↑</button><button type="button" class="sq" data-act="p-down" data-id="${p.id}" aria-label="Move program down"${pi === state.programs.length - 1 ? ' disabled' : ''}>↓</button>` : ''}${p.id === state.currentId ? '<span class="chip good">Current</span>'
+        : confirming === 'delp' + p.id ? `<button type="button" class="btn small danger" data-act="p-del" data-id="${p.id}">Delete</button><button type="button" class="btn small" data-act="cancel-confirm">Keep</button>`
+        : `<button type="button" class="btn small" data-act="p-switch" data-id="${p.id}">Switch</button><button type="button" class="sq" data-act="ask" data-what="delp${p.id}" aria-label="Delete ${esc(p.name)}">×</button>`}</div></div>`).join('')}</div>
+      ${state.programs.length > 1 ? `<label class="field" for="partner">Train together with<select id="partner" data-act="set-partner"><option value="">Nobody (solo)</option>${state.programs.filter(p => p.id !== state.currentId).map(p => `<option value="${p.id}"${p.id === state.partnerId ? ' selected' : ''}>${esc(p.name)}</option>`).join('')}</select></label><p class="note">Pick the program that holds your partner's weights and log. You both do the same workout on one phone.</p>` : `<p class="note">To train with someone, tap "Duplicate this one", name the copy after them, then pick them here.</p>`}
+      <div class="btns"><button type="button" class="btn" data-act="p-new">New program</button><button type="button" class="btn" data-act="p-dup">Duplicate this one</button></div></div>`;
+  return progCard + state.workouts.map((w, i) => `<div class="card">
+      <div class="wl"><span class="note">Workout ${i + 1} of ${state.workouts.length}</span><div>${state.workouts.length > 1 ? `<button type="button" class="sq" data-act="w-up" data-i="${i}" aria-label="Move workout up"${i === 0 ? ' disabled' : ''}>↑</button><button type="button" class="sq" data-act="w-down" data-i="${i}" aria-label="Move workout down"${i === state.workouts.length - 1 ? ' disabled' : ''}>↓</button>` : ''}</div></div>
+      <label class="field" for="wn-${i}">Workout name<input type="text" id="wn-${i}" maxlength="24" data-act="wname" data-i="${i}" value="${esc(w.name)}"></label>
+      <label class="check" for="rot-${i}"><input type="checkbox" id="rot-${i}" data-act="w-rot" data-i="${i}"${w.rotate !== false ? ' checked' : ''}> Part of the rotation (A, B, ...)</label>
+      ${w.rotate === false ? `<div class="stack"><span class="note">Suggest this workout on</span><div class="pick">${['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map((nm, k) => `<button type="button" class="btn" data-act="w-day" data-i="${i}" data-day="${k}" aria-pressed="${(w.days || []).includes(k)}">${nm}</button>`).join('')}</div><p class="note">An extra workout never changes which rotation workout is next. Lifts shared with other workouts share their weights.</p></div>` : ''}
+      <div>${w.lifts.length ? w.lifts.map((id, k) => `<div class="wl"><span>${esc(liftName(id))}</span><div>
+          <button type="button" class="sq" data-act="wl-up" data-i="${i}" data-k="${k}" aria-label="Move ${esc(liftName(id))} up"${k === 0 ? ' disabled' : ''}>↑</button>
+          <button type="button" class="sq" data-act="wl-down" data-i="${i}" data-k="${k}" aria-label="Move ${esc(liftName(id))} down"${k === w.lifts.length - 1 ? ' disabled' : ''}>↓</button>
+          <button type="button" class="sq" data-act="wl-del" data-i="${i}" data-k="${k}" aria-label="Remove ${esc(liftName(id))}">×</button></div></div>`).join('') : `<p class="note">No lifts yet.</p>`}</div>
+      <label class="field" for="add-${i}">Add a lift<select id="add-${i}" data-act="wl-add" data-i="${i}"><option value="">Choose a lift</option>${addOptions(w)}</select></label>
+      ${state.workouts.length > 1 && !(w.rotate !== false && rotIdxs().length < 2) ? (confirming === 'delw' + i ? `<div class="btns"><button type="button" class="btn danger" data-act="w-del" data-i="${i}">Delete this workout</button><button type="button" class="btn" data-act="cancel-confirm">Keep it</button></div>`
+        : `<button type="button" class="btn small quiet" data-act="ask" data-what="delw${i}">Delete workout</button>`) : ''}</div>`).join('') +
+    `<div class="btns"><button type="button" class="btn" data-act="w-add">Add a rotation workout</button><button type="button" class="btn" data-act="w-add-power">Add a power day</button></div>
+    <div class="card"><h2>Lifts in your program</h2><p class="note">Sets and reps apply wherever the lift appears. For weighted lifts, "Add" is the weight added after a workout where you hit every set. For bodyweight lifts, "Add reps" is the reps added to every set once "Every" weeks have passed, until you reach the target. Set Add reps to 0 for no automatic progression, such as jumps. Leave Rest blank to use the default from Settings.</p>
+      ${(ol => ol.map((id, oi) => { const l = state.lifts[id]; return `<div class="stack"><div class="wl"><strong>${esc(l.name)}</strong><div><button type="button" class="sq" data-act="lo-up" data-id="${id}" aria-label="Move ${esc(l.name)} up"${oi === 0 ? ' disabled' : ''}>↑</button><button type="button" class="sq" data-act="lo-down" data-id="${id}" aria-label="Move ${esc(l.name)} down"${oi === ol.length - 1 ? ' disabled' : ''}>↓</button></div></div>${liftFields(id, l)}</div>`; }))(orderedLifts()).join('') || `<p class="note">Add lifts to a workout to set their weights here.</p>`}</div>
+    <div class="card"><h2>Create a lift</h2>
+      <label class="field" for="new-lift">Name<input type="text" id="new-lift" maxlength="32" placeholder="e.g. Trap bar deadlift"></label>
+      <label class="field" for="new-type">Type<select id="new-type"><option value="bar">Barbell (shows plates per side)</option><option value="weight">Dumbbell, machine or other weight</option><option value="bw">Bodyweight (adds reps over time)</option></select></label>
+      <button type="button" class="btn" data-act="lift-new">Create lift</button>
+      ${spare.length ? `<div>${spare.map(id => `<div class="wl"><span>${esc(state.lifts[id].name)} <span class="note">not in a workout</span></span><div><button type="button" class="sq" data-act="lift-del" data-id="${id}" aria-label="Delete ${esc(state.lifts[id].name)}">×</button></div></div>`).join('')}</div>` : ''}</div>`;
+}
+
+function viewSettings() {
+  const s = state.settings;
+  return `<div class="card"><h2>Rules</h2>
+      <label class="field" for="s-myname">Your name (shown when training together)<input type="text" id="s-myname" maxlength="20" data-act="myname" value="${esc(state.myName)}"></label>
+      <div class="stack"><span class="note">Callout after each set</span><div class="pick"><button type="button" class="btn" data-act="cheer-set" data-v="on" aria-pressed="${s.cheer !== false}">On</button><button type="button" class="btn" data-act="cheer-set" data-v="off" aria-pressed="${s.cheer === false}">Off</button></div></div>
+      <div class="stack"><span class="note">Spoken alerts when training together</span><div class="pick"><button type="button" class="btn" data-act="voice-set" data-v="on" aria-pressed="${s.voice !== false}">On</button><button type="button" class="btn" data-act="voice-set" data-v="off" aria-pressed="${s.voice === false}">Off</button></div></div>
+      <div class="stack"><span class="note">Rest time shows as</span><div class="pick"><button type="button" class="btn" data-act="rest-unit" data-v="min" aria-pressed="${ru() === 'min'}">Minutes (3:30)</button><button type="button" class="btn" data-act="rest-unit" data-v="sec" aria-pressed="${ru() === 'sec'}">Seconds (210)</button></div></div>
+      <div class="stack"><span class="note">Rest + and − buttons step by</span><div class="pick">${[15, 30, 60].map(v => `<button type="button" class="btn" data-act="rest-inc" data-v="${v}" aria-pressed="${restStepSec() === v}">${v < 60 ? v + ' seconds' : '1 minute'}</button>`).join('')}</div></div>
+      <div class="grid2">
+      ${restField('Rest between sets', 's-rest', 'rest', '', s.rest)}
+      ${restField('Bodyweight rest', 's-restbw', 'restBw', '', s.restBw)}
+      <label class="field" for="s-bar">Bar weight (lb)<input type="number" inputmode="decimal" step="5" min="0" id="s-bar" data-act="set-s" data-k="bar" value="${s.bar}"></label>
+      <label class="field" for="s-fail">Misses before deload<input type="number" inputmode="numeric" step="1" min="1" id="s-fail" data-act="set-s" data-k="failLimit" value="${s.failLimit}"></label>
+      <label class="field" for="s-pct">Deload (%)<input type="number" inputmode="numeric" step="5" min="0" max="50" id="s-pct" data-act="set-s" data-k="deloadPct" value="${s.deloadPct}"></label>
+      <label class="field" for="s-total">Program length (workouts)<input type="number" inputmode="numeric" step="1" min="1" id="s-total" data-act="set-s" data-k="total" value="${s.total}"></label>
+      <label class="field" for="s-pw">Workouts per week<input type="number" inputmode="numeric" step="1" min="1" max="7" id="s-pw" data-act="set-s" data-k="perWeek" value="${s.perWeek}"></label></div>
+      <p class="note">Program length and workouts per week belong to each program. Hit every set and the lift goes up next time. Miss and it repeats. After the set number of misses in a row it deloads. Bodyweight lifts add reps on a weekly schedule instead and never deload automatically. You can override any of this when you finish a workout. Lifts and workouts are on the Program tab.</p></div>
+    <div class="card"><h2>Your data</h2><p class="note">Saved on this phone. Back it up to a file now and then, and use the file to move your log to a new phone.</p>
+      <div class="btns"><button type="button" class="btn" data-act="backup">Back up</button><label class="btn" for="restore-file" style="display:grid;place-items:center;cursor:pointer">Restore<input type="file" id="restore-file" accept="application/json,.json" hidden></label></div>
+      ${confirming === 'reset' ? `<div class="btns"><button type="button" class="btn danger" data-act="reset-yes">Reset this program</button><button type="button" class="btn" data-act="cancel-confirm">Keep it</button></div>`
+        : `<button type="button" class="btn danger" data-act="ask" data-what="reset">Reset this program and its log</button>`}</div>`;
+}
+
+function render() {
+  const st = restStepSec(), lab = st >= 60 ? (st / 60) + 'm' : String(st);
+  document.body.classList.toggle('two', !!(state.active && state.active.partner));
+  document.querySelectorAll('#timer [data-act="t-adj"]').forEach(b => { const g = Number(b.dataset.sign); b.dataset.d = String(g * st); b.textContent = (g < 0 ? '−' : '+') + lab; b.setAttribute('aria-label', st + ' seconds ' + (g < 0 ? 'less' : 'more')); });
+  renderHeader();
+  $('view').innerHTML = tab === 'history' ? viewHistory() : tab === 'settings' ? viewSettings() : tab === 'program' ? viewProgram() : viewToday();
+  for (const t of ['today', 'history', 'program', 'settings']) { if (t === tab) $('tab-' + t).setAttribute('aria-current', 'page'); else $('tab-' + t).removeAttribute('aria-current'); }
+  tick();
+}
+function toast(msg) { const t = $('toast'); t.textContent = msg; t.hidden = false; clearTimeout(toastTimer); toastTimer = setTimeout(() => { t.hidden = true; }, 2200); }
+
+/* ---------- timer ---------- */
+function tickWho(who, LA, name, two) {
+  const row = $('trow-' + who);
+  if (!LA || !LA.timerEnd) { row.hidden = true; row.classList.remove('done'); return; }
+  row.hidden = false;
+  const left = (LA.timerEnd - Date.now()) / 1000, nm = two ? name + ' · ' : '';
+  if (left > 0) { row.classList.remove('done'); $('tl-' + who).textContent = nm + 'Rest'; $('tc-' + who).textContent = fmtTime(Math.ceil(left)); }
+  else {
+    row.classList.add('done'); $('tl-' + who).textContent = nm + "Rest's over. Pick it up."; $('tc-' + who).textContent = '+' + fmtTime(-left);
+    if (!alertedMap[who]) { alertedMap[who] = true; beep(who); try { navigator.vibrate && navigator.vibrate(who === 'a' ? [200, 100, 200] : [400, 150, 400]); } catch (e) {}
+      if (two) speak(who === 'a' ? `${name}, you're up` : `${name} is up`); }
+  }
+}
+function speak(txt) { if (state.settings.voice === false) return; try { speechSynthesis.speak(new SpeechSynthesisUtterance(txt)); } catch (e) {} }
+function tick() {
+  const a = state.active, el = $('timer');
+  if (!a) { el.hidden = true; return; }
+  const two = !!a.partner;
+  tickWho('a', a, myName(), two); tickWho('p', a.partner, a.partner && a.partner.name, two);
+  el.hidden = $('trow-a').hidden && $('trow-p').hidden; el.classList.toggle('two', two);
+  if (two) for (const who of ['a', 'p']) { const t = $('ts-' + who); if (t) { const [txt, cls] = statText(lifterOf(who)); t.textContent = txt; t.classList.toggle('go', cls === 'go'); } }
+}
+function startTimer(who, sec) { lifterOf(who).timerEnd = Date.now() + sec * 1000; alertedMap[who] = false; }
+function syncOv() {
+  if (!ovForm) return; const g = id => document.getElementById(id), n = (id, k) => { const el = g(id); if (el && el.value !== '') ovForm[k] = Number(el.value); };
+  n('ov-w', 'w'); n('ov-sets', 'sets'); n('ov-reps', 'reps'); n('ov-weeks', 'weeks'); n('ov-inc', 'inc'); const nt = g('ov-note'); if (nt) ovForm.note = nt.value;
+}
+const arrOf = (l, side) => side === 'R' ? l.logR : l.log;
+const CHEER_SET = ['Rack it. Breathe.', 'That one counts.', 'Chalk up. Next set.', 'Heavy and ugly still counts.', 'Stay tight. Stay put.', 'One more in the book.', 'Rest is earned.', 'Plant your feet. Go again.', 'Quiet work adds up.', 'No mirror needed.'];
+const CHEER_LIFT = ['Every set in. Write it down.', 'Done. Next lift.', 'Heavier next time.', 'That is how a base gets built.', 'Put the bar down. Move on.'];
+const CHEER_DONE = ['Log it and go home.', 'Be hard to move.', 'Eat. Sleep. Come back heavier.', 'The bar will be here next time. So will you.'];
+let cheerTimer = null, cheerLast = '';
+function cheer(head, pool, big) {
+  const el = $('cheer'); if (!el) return;
+  let m; do { m = pool[Math.floor(Math.random() * pool.length)]; } while (pool.length > 1 && m === cheerLast); cheerLast = m;
+  el.className = 'cheer' + (big ? ' big' : ''); el.innerHTML = `<div class="ch">${esc(head)}</div><div class="cm">${esc(m)}</div>`; el.hidden = false;
+  clearTimeout(cheerTimer); cheerTimer = setTimeout(() => { el.hidden = true; }, big ? 4200 : 2600);
+}
+function celebrate(LA, l, s, who) {
+  if (state.settings.cheer === false) return;
+  const name = (LA.partner || who === 'p' || (state.active && state.active.partner)) ? (who === 'p' ? LA.name : myName()) + ': ' : '';
+  const liftDone = l.log.every(v => v != null) && (!l.logR || l.logR.every(v => v != null));
+  const allDone = LA.lifts.every(x => x.log.every(v => v != null) && (!x.logR || x.logR.every(v => v != null)));
+  if (allDone) cheer(name + 'Workout done.', CHEER_DONE, true);
+  else if (liftDone) cheer(name + liftName(l.id) + ' done.', CHEER_LIFT, true);
+  else cheer(name + 'Set ' + (s + 1) + ' of ' + l.sets + ' done', CHEER_SET, false);
+}
+function afterLog(LA, l, s, who) {
+  who = who || 'a';
+  if (l.logR && s != null && (l.log[s] == null || l.logR[s] == null)) return;
+  celebrate(LA, l, s, who);
+  if (LA.lifts.some(x => x.log.some(v => v == null) || (x.logR && x.logR.some(v => v == null)))) startTimer(who, restFor(l.id, who)); else LA.timerEnd = 0;
+}
+function unlockAudio() { try { audioCtx = audioCtx || new (window.AudioContext || window.webkitAudioContext)(); if (audioCtx.state === 'suspended') audioCtx.resume(); } catch (e) {} }
+function beep(who) {
+  if (!audioCtx) return;
+  const f = who === 'p' ? 587 : 880, times = who === 'p' ? [0, 0.3] : [0, 0.25, 0.5];
+  try { times.forEach(t => { const o = audioCtx.createOscillator(), g = audioCtx.createGain(); o.frequency.value = f; o.connect(g); g.connect(audioCtx.destination);
+    g.gain.setValueAtTime(0.25, audioCtx.currentTime + t); g.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + t + 0.18); o.start(audioCtx.currentTime + t); o.stop(audioCtx.currentTime + t + 0.2); }); } catch (e) {}
+}
+async function keepAwake() { try { if (state.active && navigator.wakeLock && document.visibilityState === 'visible') wakeLock = await navigator.wakeLock.request('screen'); } catch (e) {} }
+
+function commitActive(A) {
+      const before = { nextIdx: state.nextIdx, lifts: {} };
+      const lifts = A.lifts.filter(l => state.lifts[l.id]).map(l => { const hit = isHit(l), bw = isBw(state.lifts[l.id]), cur = { ...state.lifts[l.id], w: l.w, sets: l.sets, reps: l.reps };
+        const L0 = state.lifts[l.id]; before.lifts[l.id] = clone(L0);
+        const choice = A.choices[l.id] || choicesFor(cur, hit, state.settings)[0];
+        if (L0.ov) { const ov = { ...L0.ov, w: l.w }; if (choice === 'ovadd') ov.w = l.w + (ov.inc || 5); state.lifts[l.id] = { ...L0, ov }; }
+        else state.lifts[l.id] = applyChoice(cur, choice, hit, state.settings);
+        return { id: l.id, name: cur.name, w: l.w, sets: l.sets, reps: l.reps, bw, ...(L0.ov ? { ov: true } : {}), ...(l.note ? { note: l.note } : {}), log: l.log.map(r => r == null ? 0 : r), ...(l.logR ? { logR: l.logR.map(r => r == null ? 0 : r) } : {}), hit, choice }; });
+      const wiS = Number.isInteger(A.widx) ? A.widx : state.nextIdx, extra = !!state.workouts[wiS] && state.workouts[wiS].rotate === false;
+      state.history.push({ n: extra ? 0 : rotDone() + 1, type: A.type, date: new Date().toISOString(), mins: A.startedAt ? Math.max(1, Math.round((Date.now() - A.startedAt) / 60000)) : 0, notes: A.notes || '', lifts, before, extra });
+      if (!extra) state.nextIdx = nextRot(wiS);
+      sel = null;
+}
+function commitPartner(PA, A) {
+  const pe = state.programs.find(p => p.id === PA.id); if (!pe || !pe.data) return;
+  stashCurrent(); const ae = state.programs.find(p => p.id === state.currentId);
+  loadData(pe.data);
+  commitActive({ type: PA.type, widx: PA.widx, startedAt: A.startedAt, notes: A.notes, lifts: PA.lifts, choices: PA.choices });
+  pe.data = snapshot();
+  loadData(ae.data); ae.data = null;
+}
+
+/* ---------- actions ---------- */
+function act(a, d) {
+  const A = state.active, W = d.i != null && !A ? state.workouts[Number(d.i)] : null;
+  if (a === 'start' || a === 'save' || a === 'cancel-yes' || a === 'unreview') { wTab = 'lifts'; ovForm = null; }
+  if (a === 'tab' || a === 'review' || a === 'cancel-yes' || a === 'save' || a === 'edit-done') edit = null;
+  switch (a) {
+    case 'tab': tab = d.tab; confirming = null; window.scrollTo(0, 0); break;
+    case 'ask': confirming = d.what; break;
+    case 'cancel-confirm': confirming = null; break;
+    case 'pick': sel = Number(d.i); break;
+    case 'ppick': psel = Number(d.i); break;
+    case 'w': {
+      const delta = Number(d.d);
+      if (A) { const l = lifterOf(d.who).lifts.find(x => x.id === d.id); l.w = Math.max(0, l.w + delta); }
+      else { const L = liftsOf(d.who)[d.id]; if (L.ov) L.ov.w = Math.max(0, L.ov.w + delta); else { L.w = Math.max(0, L.w + delta); L.fails = 0; } state.setup = true; }
+      persist(); break; }
+    case 'bwr': {
+      const L = liftsOf(d.who)[d.id]; if (A || !isBw(L)) return;
+      if (L.ov) { L.ov.reps = Math.max(1, Math.min(100, L.ov.reps + Number(d.d))); persist(); break; }
+      L.reps = Math.max(1, Math.min(100, L.reps + Number(d.d))); L.baseReps = L.reps; L.fails = 0; state.setup = true; persist(); break; }
+    case 'rest': { const k = d.k === 'restBw' ? 'restBw' : 'rest'; state.settings[k] = Math.max(15, state.settings[k] + Number(d.d)); persist(); break; }
+    case 'to-base': state.lifts[d.id] = applyChoice(state.lifts[d.id], 'base', true, state.settings); persist(); break;
+    case 'start': {
+      unlockAudio();
+      const wi = curIdx(), wk = state.workouts[wi];
+      if (!wk.lifts.length) return;
+      sel = null;
+      state.setup = true;
+      const mk = (id, L) => { const v = L.ov || L, o = { id, w: v.w, sets: v.sets, reps: v.reps, log: Array(v.sets).fill(null) }; if (L.ov) o.ov = true; if (L.perSide) { o.ps = true; o.logR = Array(v.sets).fill(null); } return o; };
+      state.active = { type: wk.name, widx: wi, startedAt: Date.now(), timerEnd: 0, review: false, choices: {}, lifts: wk.lifts.map(id => mk(id, state.lifts[id])) };
+      alertedMap = { a: false, p: false };
+      const pe = partnerEntry();
+      if (pe && !solo) { normPartner(pe); const d2 = pe.data; let pw = partIdx(pe), pwk = d2.workouts[pw];
+        state.active.partner = { id: pe.id, name: pe.name, widx: pw, type: pwk.name, timerEnd: 0, choices: {}, lifts: pwk.lifts.filter(id => d2.lifts[id]).map(id => mk(id, d2.lifts[id])) }; }
+      persist(); keepAwake(); window.scrollTo(0, 0); break; }
+    case 'set': {
+      unlockAudio();
+      const LA = lifterOf(d.who), l = LA.lifts[Number(d.i)], s = Number(d.s), arr = arrOf(l, d.side), r = arr[s];
+      if (r == null) { arr[s] = l.reps; afterLog(LA, l, s, d.who || 'a'); }
+      else if (r > 0) arr[s] = r - 1;
+      else arr[s] = null;
+      persist(); break; }
+    case 'er': {
+      if (!A || !edit) return;
+      const LA = lifterOf(edit.who), l = LA.lifts[edit.i], arr = arrOf(l, edit.side), cur = arr[edit.s], wasNull = cur == null;
+      arr[edit.s] = Math.max(0, Math.min(200, (wasNull ? l.reps : cur) + Number(d.d)));
+      if (wasNull) afterLog(LA, l, edit.s, edit.who);
+      persist(); break; }
+    case 'edit-done': break;
+    case 't-adj': { const LA = lifterOf(d.who || 'a'); if (A && LA && LA.timerEnd) { LA.timerEnd = Math.max(Date.now(), LA.timerEnd) + Number(d.d) * 1000; alertedMap[d.who || 'a'] = false; persist(); } tick(); return; }
+    case 't-skip': { const LA = lifterOf(d.who || 'a'); if (LA) { LA.timerEnd = 0; persist(); } tick(); return; }
+    case 'solo-toggle': solo = !solo; break;
+    case 'cheer-set': state.settings.cheer = d.v !== 'off'; persist(); break;
+    case 'voice-set': state.settings.voice = d.v !== 'off'; persist(); break;
+    case 'review': A.review = true; A.timerEnd = 0; if (A.partner) A.partner.timerEnd = 0; confirming = null; persist(); window.scrollTo(0, 0); break;
+    case 'unreview': A.review = false; persist(); break;
+    case 'cancel-yes': state.active = null; confirming = null; persist(); break;
+    case 'save': {
+      const PA = A.partner; commitActive(A); if (PA) commitPartner(PA, A); psel = null;
+      state.active = null; persist(); toast(PA ? `Saved for ${myName()} and ${PA.name}` : 'Workout saved'); window.scrollTo(0, 0);
+      try { wakeLock && wakeLock.release(); } catch (e) {}
+      break; }
+    case 'undo-yes': {
+      const e = state.history.pop();
+      if (e && e.before) {
+        const bl = e.before.lifts || e.before;
+        for (const l of e.lifts) if (bl[l.id] && state.lifts[l.id]) state.lifts[l.id] = { ...state.lifts[l.id], ...bl[l.id] };
+        state.nextIdx = Number.isInteger(e.before.nextIdx) ? Math.min(e.before.nextIdx, state.workouts.length - 1) : state.history.length % state.workouts.length;
+      }
+      confirming = null; persist(); toast('Workout removed'); break; }
+    case 'restart-yes': archiveHistory(state.history, state.programName); state.history = []; state.nextIdx = 0; confirming = null; persist(); break;
+    case 'reset-yes': { archiveHistory(state.history, state.programName); const keep = { programName: state.programName, currentId: state.currentId, programs: state.programs, settings: state.settings, archive: state.archive };
+      state = { ...defaultState(), ...keep, settings: { ...defaultState().settings, ...keep.settings } }; loadData(newProgramData()); confirming = null; tab = 'today'; persist(); toast('Program reset'); break; }
+    case 'p-switch': if (A) return; switchTo(d.id); tab = 'program'; confirming = null; persist(); window.scrollTo(0, 0); toast('Switched to ' + state.programName); break;
+    case 'p-new': if (A) return; addProgram('Program ' + (state.programs.length + 1), newProgramData()); tab = 'program'; persist(); toast('New program created. Name it above.'); break;
+    case 'p-dup': {
+      if (A) return;
+      const data = snapshot(); data.history = []; data.nextIdx = 0; data.setup = true;
+      for (const id of Object.keys(data.lifts)) { data.lifts[id].fails = 0; if (data.lifts[id].kind === 'bw') data.lifts[id].since = null; }
+      addProgram(state.programName + ' copy', data); persist(); toast('Copied. Name it above.'); break; }
+    case 'p-del': if (A || d.id === state.currentId || state.programs.length < 2) return; { const gone = state.programs.find(p => p.id === d.id); if (gone && gone.data) archiveHistory(gone.data.history, gone.name); } state.programs = state.programs.filter(p => p.id !== d.id); if (state.partnerId === d.id) state.partnerId = null; confirming = null; persist(); break;
+    /* program editing (blocked while a workout is active) */
+    case 'lo-up': case 'lo-down': { if (A) return; const ol = orderedLifts(), i = ol.indexOf(d.id), j = d.act === 'lo-up' ? i - 1 : i + 1; if (i < 0 || j < 0 || j >= ol.length) return;
+      const t = ol[i]; ol[i] = ol[j]; ol[j] = t; ol.forEach((id, k) => { state.lifts[id].ord = k; }); persist(); break; }
+    case 'wl-down': { if (!W) return; const k = Number(d.k); if (k < W.lifts.length - 1) { const x = W.lifts[k]; W.lifts[k] = W.lifts[k + 1]; W.lifts[k + 1] = x; persist(); } break; }
+    case 'w-up': case 'w-down': { if (A) return; const i = Number(d.i), j = d.act === 'w-up' ? i - 1 : i + 1; if (j < 0 || j >= state.workouts.length) return;
+      const t = state.workouts[i]; state.workouts[i] = state.workouts[j]; state.workouts[j] = t;
+      const fix = n => n === i ? j : n === j ? i : n; state.nextIdx = fix(state.nextIdx); if (sel != null) sel = fix(sel); persist(); break; }
+    case 'p-up': case 'p-down': { if (A) return; const i = state.programs.findIndex(p => p.id === d.id), j = d.act === 'p-up' ? i - 1 : i + 1; if (i < 0 || j < 0 || j >= state.programs.length) return;
+      const t = state.programs[i]; state.programs[i] = state.programs[j]; state.programs[j] = t; persist(); break; }
+    case 'wl-up': { if (!W) return; const k = Number(d.k); if (k > 0) { const x = W.lifts[k]; W.lifts[k] = W.lifts[k - 1]; W.lifts[k - 1] = x; persist(); } break; }
+    case 'wl-del': if (!W) return; W.lifts.splice(Number(d.k), 1); persist(); break;
+    case 'w-add': if (A) return; state.workouts.push({ name: String.fromCharCode(65 + state.workouts.length % 26), lifts: [] }); persist(); break;
+    case 'w-del': if (!W || state.workouts.length < 2 || (W.rotate !== false && rotIdxs().length < 2)) return; state.workouts.splice(Number(d.i), 1); state.nextIdx = Math.min(state.nextIdx, state.workouts.length - 1); if (state.workouts[state.nextIdx].rotate === false) state.nextIdx = rotIdxs()[0]; sel = null; confirming = null; persist(); break;
+    case 'lift-new': {
+      if (A) return;
+      const name = $('new-lift').value.trim(); if (!name) { toast('Give the lift a name first'); return; }
+      const type = $('new-type').value, bar = type === 'bar';
+      const lift = { name, bar, w: bar ? state.settings.bar : 0, inc: 5, fails: 0, sets: 3, reps: 8, baseSets: 3, baseReps: 8, rest: null };
+      if (type === 'bw') Object.assign(lift, { kind: 'bw', inc: 0, target: 15, step: 1, every: 1, since: null });
+      state.lifts['c' + Date.now().toString(36)] = lift;
+      persist(); toast('Lift created. Add it to a workout above.'); break; }
+    case 'lift-del': if (A || LIB[d.id] || state.workouts.some(w => w.lifts.includes(d.id))) return; delete state.lifts[d.id]; persist(); break;
+    case 'w-add-power': if (A) return; state.workouts.push({ name: state.workouts.some(w => w.name === 'Power') ? 'Power ' + (state.workouts.length + 1) : 'Power', lifts: ['boxjump', 'depthjump', 'sled', 'broad'], rotate: false, days: [2, 4] }); persist(); toast('Power day added. It runs outside the rotation.'); break;
+    case 'w-day': { if (!W) return; const dd = Number(d.day); W.days = W.days || []; const k = W.days.indexOf(dd); if (k >= 0) W.days.splice(k, 1); else W.days.push(dd); persist(); break; }
+    case 'wtab': wTab = d.v === 'notes' ? 'notes' : 'lifts'; break;
+    case 'ov-open': {
+      if (A) return; const L = state.lifts[d.id]; if (!L) return; const o = L.ov, bw = isBw(L);
+      const left = o && o.until ? Math.max(0, Math.ceil((o.until - Date.now()) / (7 * 86400000))) : (o ? 0 : 2);
+      ovForm = { id: d.id, edit: !!o, w: o ? o.w : L.w, sets: o ? o.sets : L.sets, reps: o ? o.reps : L.reps, weeks: left, inc: o ? (o.inc || 5) : (L.inc || 5), note: o ? (o.note || '') : '' };
+      confirming = null; break; }
+    case 'ov-pct': {
+      if (!ovForm) return; syncOv(); const L = state.lifts[ovForm.id];
+      ovForm.w = Math.max(L.bar ? state.settings.bar : 0, roundTo(L.w * (1 - Number(d.p) / 100), 5)); break; }
+    case 'ov-cancel': ovForm = null; break;
+    case 'ov-save': {
+      if (A || !ovForm) return; syncOv(); const f = ovForm, L = state.lifts[f.id]; if (!L) return;
+      const sets = Math.min(10, Math.max(1, Math.round(f.sets) || 1)), reps = Math.min(100, Math.max(1, Math.round(f.reps) || 1));
+      const weeks = Math.max(0, Math.min(26, Math.round(f.weeks) || 0));
+      L.ov = { w: isBw(L) ? 0 : Math.max(0, f.w), sets, reps, inc: Math.max(0, f.inc || 0), start: L.ov ? L.ov.start : Date.now(), until: weeks > 0 ? Date.now() + weeks * 7 * 86400000 : null, note: String(f.note || '').trim().slice(0, 120) };
+      state.setup = true; ovForm = null; persist(); toast('Override on. Your program is paused for this lift.'); break; }
+    case 'ov-end': { const L = state.lifts[d.id]; if (!L || A) return; delete L.ov; confirming = null; persist(); toast('Override ended. Back to your program.'); break; }
+    case 'hist-mode': histMode = d.v === 'all' ? 'all' : 'program'; break;
+    case 'rest-unit': state.settings.restUnit = d.v === 'sec' ? 'sec' : 'min'; persist(); break;
+    case 'rest-inc': state.settings.restStep = [15, 30, 60].includes(Number(d.v)) ? Number(d.v) : 15; persist(); break;
+    default: return;
+  }
+  render();
+}
+document.addEventListener('click', e => {
+  if (lpFired) { lpFired = false; return; }
+  const el = e.target.closest('button[data-act]'); if (el && !el.disabled) act(el.dataset.act, el.dataset);
+});
+/* Press and hold a set disc to type its rep count. */
+document.addEventListener('pointerdown', e => {
+  lpFired = false; clearTimeout(lpTimer);
+  const b = e.target.closest && e.target.closest('button.set'); if (!b || !state.active) return;
+  lpTimer = setTimeout(() => {
+    lpFired = true; edit = { i: Number(b.dataset.i), s: Number(b.dataset.s), side: b.dataset.side || '', who: b.dataset.who || 'a' };
+    try { navigator.vibrate && navigator.vibrate(30); } catch (x) {}
+    render();
+  }, 450);
+});
+['pointerup', 'pointercancel'].forEach(ev => document.addEventListener(ev, () => clearTimeout(lpTimer)));
+document.addEventListener('contextmenu', e => { if (e.target.closest && e.target.closest('button.set')) e.preventDefault(); });
+document.addEventListener('change', e => {
+  const el = e.target, a = el.dataset && el.dataset.act; if (!a) return;
+  if (a === 'choice') { lifterOf(el.dataset.who || 'a').choices[el.dataset.id] = el.value; persist(); return; }
+  if (a === 'set-partner') { state.partnerId = el.value || null; persist(); render(); return; }
+  if (a === 'myname') { state.myName = el.value.trim().slice(0, 20) || 'Me'; persist(); return; }
+  if (a === 'wl-add') { if (state.active || !el.value || !state.lifts[el.value]) return; state.workouts[Number(el.dataset.i)].lifts.push(el.value); persist(); render(); return; }
+  if (a === 'pname') { if (state.active) return; state.programName = el.value.trim().slice(0, 40) || 'My program'; const e = state.programs.find(p => p.id === state.currentId); if (e) e.name = state.programName; persist(); return; }
+  if (a === 'wname') { if (state.active) return; state.workouts[Number(el.dataset.i)].name = el.value.trim() || String.fromCharCode(65 + Number(el.dataset.i)); persist(); return; }
+  if (a === 'er-set') {
+    const A = state.active, v = Math.round(Number(el.value)); if (!A || !edit || el.value === '' || !isFinite(v) || v < 0) return;
+    const LA = lifterOf(edit.who), l = LA.lifts[edit.i], arr = arrOf(l, edit.side), wasNull = arr[edit.s] == null; arr[edit.s] = Math.min(200, v);
+    if (wasNull) afterLog(LA, l, edit.s, edit.who);
+    persist(); render(); return;
+  }
+  if (a === 'set-rt') {
+    const rt = el.dataset.rt, box = el.closest('.mmss'); let secs;
+    if (box) { const m = box.querySelector('[data-p="m"]').value, sc = box.querySelector('[data-p="s"]').value; secs = (m === '' && sc === '') ? null : Number(m || 0) * 60 + Number(sc || 0); }
+    else secs = el.value === '' ? null : Number(el.value);
+    if (secs != null && (!isFinite(secs) || secs < 0)) return;
+    if (rt === 'lift') { const L = state.lifts[el.dataset.id]; if (!L) return; L.rest = secs && secs >= 1 ? Math.max(15, Math.round(secs)) : null; }
+    else { if (secs == null || secs < 15) return; state.settings[rt] = Math.round(secs); }
+    persist(); return;
+  }
+  if (a === 'set-ps') { const L = state.lifts[el.dataset.id]; if (!L) return; L.perSide = el.checked; persist(); return; }
+  if (a === 'w-rot') {
+    if (state.active) return;
+    const i = Number(el.dataset.i), w = state.workouts[i]; if (!w) return;
+    if (!el.checked && w.rotate !== false && rotIdxs().length < 2) { toast('Keep at least one workout in the rotation'); render(); return; }
+    w.rotate = el.checked; if (!w.rotate && state.nextIdx === i) state.nextIdx = rotIdxs()[0];
+    sel = null; persist(); render(); return;
+  }
+  const v = Number(el.value); if (el.value === '' || !isFinite(v) || v < 0) return;
+  const L = state.lifts[el.dataset.id];
+  if (a === 'set-w') { L.w = v; L.fails = 0; state.setup = true; }
+  else if (a === 'set-inc') L.inc = v;
+  else if (a === 'set-sets') { const n = Math.min(10, Math.max(1, Math.round(v))); L.baseSets = n; L.sets = n; }
+  else if (a === 'set-reps') { const n = Math.min(isBw(L) ? 100 : 30, Math.max(1, Math.round(v))); L.baseReps = n; L.reps = n; if (isBw(L)) state.setup = true; }
+  else if (a === 'set-target') L.target = Math.min(100, Math.max(1, Math.round(v)));
+  else if (a === 'set-step') L.step = Math.min(50, Math.max(0, Math.round(v)));
+  else if (a === 'set-every') L.every = Math.min(12, Math.max(1, Math.round(v)));
+  else if (a === 'set-s') { const k = el.dataset.k; state.settings[k] = ['rest', 'restBw'].includes(k) ? Math.max(15, v) : ['failLimit', 'total', 'perWeek'].includes(k) ? Math.max(1, Math.round(v)) : v; }
+  else return;
+  persist();
+});
+document.addEventListener('input', e => {
+  const el = e.target, a = el.dataset && el.dataset.act, A = state.active; if (!A) return;
+  if (a === 'wk-note') { A.notes = el.value.slice(0, 2000); persist(); }
+  else if (a === 'lift-note') { const l = A.lifts[Number(el.dataset.i)]; if (l) { l.note = el.value.slice(0, 500); persist(); } }
+});
+document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') { keepAwake(); pullRemote(); tick(); } });
+
+state = loadLocal() || defaultState();
+render();
+setInterval(tick, 250);
+connect();
+
+/* ---------- standalone site: backup / restore and offline ---------- */
+async function backup() {
+  const name = 'heavy-base-' + new Date().toISOString().slice(0, 10) + '.json';
+  const blob = new Blob([JSON.stringify(state, null, 1)], { type: 'application/json' });
+  try { const f = new File([blob], name, { type: 'application/json' }); if (navigator.canShare && navigator.canShare({ files: [f] })) { await navigator.share({ files: [f], title: 'Heavy Base backup' }); return; } } catch (e) { if (e && e.name === 'AbortError') return; }
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = name; document.body.appendChild(a); a.click(); setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 1000);
+}
+document.addEventListener('click', e => { const el = e.target.closest && e.target.closest('button[data-act="backup"]'); if (el) backup(); });
+document.addEventListener('change', e => {
+  if (e.target.id !== 'restore-file' || !e.target.files || !e.target.files[0]) return;
+  const file = e.target.files[0]; e.target.value = '';
+  file.text().then(t => { const d = JSON.parse(t); if (!d || typeof d !== 'object' || !d.lifts) throw new Error('bad');
+    if (!confirm('Replace everything on this phone with the backup from this file?')) return;
+    state = normalize(d); state.active = null; persist(); render(); toast('Backup restored'); }).catch(() => toast('That file is not a Heavy Base backup'));
+});
+try { navigator.storage && navigator.storage.persist && navigator.storage.persist(); } catch (e) {}
+if ('serviceWorker' in navigator && location.protocol === 'https:') navigator.serviceWorker.register('sw.js').catch(() => {});
+</script>
+</body>
+</html>
